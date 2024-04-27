@@ -1,22 +1,30 @@
 #!/bin/bash
 
-echo "start" > /var/rocket-ssh/status.txt
+configs_file_path="/var/rocket-ssh/configs.json"
 
-read_config(){
-    config_file="/var/rocket-ssh/rocket_config.txt"
 
-    # Check if the config file exists
-    if [ -f "$config_file" ]; then
-        # Read the values using grep and awk
-        ssh_port=$(grep '^ssh_port=' "$config_file" | awk -F= '{print $2}')
-        udp_port=$(grep '^udp_port=' "$config_file" | awk -F= '{print $2}')
-        api_token=$(grep '^api_token=' "$config_file" | awk -F= '{print $2}')
-        api_url=$(grep '^api_url=' "$config_file" | awk -F= '{print $2}')
-        ovpn_enable=$(grep '^ovpn_enable=' "$config_file" | awk -F= '{print $2}')
-        ovpn_port=$(grep '^ovpn_port=' "$config_file" | awk -F= '{print $2}')
-        ovpn_domain=$(grep '^ovpn_domain=' "$config_file" | awk -F= '{print $2}')
-        
-        echo "OVPN PORT1: $ovpn_port" 
+start_installtion(){
+    echo "start" > /var/rocket-ssh/status.txt
+}
+
+get_config() {
+    local key_to_extract="$1"
+
+    # Check if jq is installed
+    if command -v jq &> /dev/null; then
+        echo "jq could not be found. Please install jq."
+        return 1
+    fi
+
+    # Use jq to parse the JSON file and print the value of the specified key
+    local value=$(jq -r --arg key "$key_to_extract" '.[$key]?' "$configs_file_path")
+
+    # Check if the key was found
+    if [ -z "$value" ]; then
+        return 1
+    else
+        echo "$value"
+        return 0
     fi
 }
 
@@ -42,7 +50,7 @@ install_packages() {
     done
 
     # install packages
-    local install_packages=("build-essential" "libpam0g-dev" "libcurl4-openssl-dev" "cmake" "net-tools" "curl" "nginx" "nodejs" "supervisor" "psmisc")
+    local install_packages=("build-essential" "libpam0g-dev" "libcurl4-openssl-dev" "cmake" "net-tools" "curl" "nginx" "nodejs" "supervisor" "psmisc" "unzip" "jq")
 
     for ipackage in "${install_packages[@]}"; do
         sudo apt-get install -y "$ipackage"
@@ -73,7 +81,7 @@ ENDOFFILE
 }
 
 configure_rocket_app(){
-    
+
     local file_url="https://raw.githubusercontent.com/farhad-apps/files/main/rocket-app.js"
     # Define the name of the file you want to create
     local file_path="/var/rocket-ssh/rocket-app.js"
@@ -81,10 +89,11 @@ configure_rocket_app(){
     curl -s -o "$file_path" "$file_url"
 
     if [ $? -eq 0 ]; then
+        local api_token=$(get_config "api_token")
+        local api_url=$(get_config "api_url")
         sed -i "s|{api_token}|$api_token|g" "$file_path"
         sed -i "s|{api_url}|$api_url|g" "$file_path"
     fi
-
  
 }
 
@@ -114,75 +123,15 @@ ENDOFFILE
 }
 
 
-remove_rocketproc_service(){
-
-    local file_path="/etc/systemd/system/rocketproc.service"
-    
-    if [ -f "$file_path" ]; then
-        sudo systemctl stop rocketproc
-        sudo systemctl disable rocketproc
-        sudo rm $file_path
-        sudo systemctl daemon-reload
-    fi
-}
-
-
 complete_install(){
-    echo "complete" > /var/rocket-ssh/status.txt
-
-    sudo systemctl restart ssh
-    sudo systemctl restart sshd
-    
-    local conf_file_path="/var/rocket-ssh/rocket_config.txt"
-    if [ -f "$so_file_path" ]; then
-        rm $conf_file_path
-    fi
-
-    local nethogs_folder_path="/var/rocket-ssh/nethogs-json-master"
-    if [ -d "$nethogs_folder_path" ]; then
-        rm -R $nethogs_folder_path
-    fi
-
-    sudo systemctl stop cron
-    local coron_file_path="/var/rocket-ssh/cronjob.sh"
-    if [ -f "$coron_file_path" ]; then
-        pkill -f /var/rocket-ssh/cronjob.sh 
-        rm $coron_file_path
-        rm /var/rocket-ssh/cronjob.lock
-    fi
-    
-    local ssh_auth_file="/var/rocket-ssh/rocket_ssh_auth.so"
-    if [ -f "$ssh_auth_file" ]; then
-        rm $ssh_auth_file
-    fi
-    
-    local ovpn_file="/var/rocket-ssh/ovpn-setup.sh"
-    if [ -f "$ovpn_file" ]; then
-        echo "S"
-        #rm $ovpn_file
-    fi
-
-    sleep 5
-    
-    # Remove the script file
-    rm /var/rocket-ssh/install
-    rm /usr/bin/jcurl.sh
-    #rm /var/rocket-ssh/ovpn-setup.sh
+  echo "complete" > /var/rocket-ssh/status.txt
 }
 
 
 # Call the functions to perform the tasks
 config_needrestart
 install_packages
-read_config
-setup_nethogs
-setup_udpgw_service
-build_pam_file
-config_pam_auth
-config_sshd
 configure_nginx
-remove_rocketproc_service
 configure_rocket_app
 configure_supervisor
-ovpn_installer
 complete_install
