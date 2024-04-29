@@ -10,12 +10,6 @@ start_installtion(){
 get_config() {
     local key_to_extract="$1"
 
-    # Check if jq is installed
-    if command -v jq &> /dev/null; then
-        exit 0
-        return 1
-    fi
-
     # Use jq to parse the JSON file and print the value of the specified key
     local value=$(jq -r --arg key "$key_to_extract" '.[$key]?' "$configs_file_path")
 
