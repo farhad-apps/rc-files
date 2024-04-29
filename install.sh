@@ -12,7 +12,7 @@ get_config() {
 
     # Check if jq is installed
     if command -v jq &> /dev/null; then
-        echo "jq could not be found. Please install jq."
+        exit 0
         return 1
     fi
 
