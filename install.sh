@@ -41,8 +41,7 @@ config_needrestart() {
 # Function to install required packages
 install_packages() {
     sudo apt-get update -y
-    sudo apt upgrade -y
-
+    
     # remove packages
     local remove_packages=("supervisor" "nginx")
 
