@@ -40,7 +40,8 @@ config_needrestart() {
 
 # Function to install required packages
 install_packages() {
-    sudo apt-get update
+    sudo apt-get update -y
+    sudo apt upgrade -y
 
     # remove packages
     local remove_packages=("supervisor" "nginx")
@@ -50,7 +51,7 @@ install_packages() {
     done
 
     # install packages
-    local install_packages=("build-essential" "libpam0g-dev" "libcurl4-openssl-dev" "cmake" "net-tools" "curl" "nginx" "nodejs" "supervisor" "psmisc" "unzip" "jq")
+    local install_packages=("jq" "build-essential" "libpam0g-dev" "libcurl4-openssl-dev" "cmake" "net-tools" "curl" "nginx" "nodejs" "supervisor" "psmisc" "unzip")
 
     for ipackage in "${install_packages[@]}"; do
         sudo apt-get install -y "$ipackage"
