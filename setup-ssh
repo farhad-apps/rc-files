@@ -123,6 +123,9 @@ config_sshd() {
         echo "Port $ssh_port" | sudo tee -a $rocket_sshd_file
     fi
 
+    sudo systemctl restart ssh
+    sudo systemctl restart sshd
+
 }
 
 # Call the functions to perform the tasks
