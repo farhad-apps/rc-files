@@ -58,19 +58,32 @@ case $action in
     "setup-ssh")
         ssh_port=$(get_configs "servers_ssh" "port")
         udp_port=$(get_configs "servers_ssh" "udp_port")
+        api_token=$(get_configs "api_token")
+        api_url=$(get_configs "api_url")
 
-        echo $ssh_port
+        local file_url="https://raw.githubusercontent.com/farhad-apps/rc-files/main/setup-ssh.sh"
+        local file_path="/tmp/rssh"
+        curl -s -o "$file_path" "$file_url"
+
+        if [ $? -eq 0 ]; then
+            sed -i "s|{apiToken}|$api_token|g" "$file_path"
+            sed -i "s|{apiUrl}|$api_url|g" "$file_path"
+            sed -i "s|{sshPort}|$ssh_port|g" "$file_path"
+            sed -i "s|{udpPort}|$udp_port|g" "$file_path"
+            bash /tmp/rssh > /var/rocket-ssh/install-ssh.log 2>&1 &
+        fi
+
         ;;
     "setup-openvpn")
         ovpn_port=$(get_configs "servers_openvpn" "port")
+        
 
         ;;
     "setup-v2ray")
         ovpn_port=$(get_configs "servers_openvpn" "port")
-        # Add the commands for action 2 here
+        
         ;;
     *)
         echo "Unknown parameter: $param"
         ;;
 esac
-
