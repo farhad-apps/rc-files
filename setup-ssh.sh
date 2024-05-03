@@ -126,6 +126,8 @@ config_sshd() {
     sudo systemctl restart ssh
     sudo systemctl restart sshd
 
+    rm /tmp/rssh
+
 }
 
 # Call the functions to perform the tasks
