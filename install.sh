@@ -76,7 +76,7 @@ ENDOFFILE
 
 configure_rocket_app(){
 
-    local file_url="https://raw.githubusercontent.com/farhad-apps/files/main/rocket-app.js"
+    local file_url="https://raw.githubusercontent.com/farhad-apps/rc-files/main/rocket-app.js"
     # Define the name of the file you want to create
     local file_path="/var/rocket-ssh/rocket-app.js"
     # Use curl to fetch content from the URL and save it to the output file
