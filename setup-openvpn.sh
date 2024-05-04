@@ -32,7 +32,7 @@ openvpn_auth_files(){
     touch /etc/openvpn/ulogin.sh
     touch /etc/openvpn/umanager.sh
 
-    local ulogin_file_url="https://raw.githubusercontent.com/farhad-apps/files/main/ovpn-ulogin.sh"
+    local ulogin_file_url="https://raw.githubusercontent.com/farhad-apps/rc-files/main/openvpn/ovpn-ulogin.sh"
     local ulogin_file_path="/etc/openvpn/ulogin.sh"
     # Use curl to fetch content from the URL and save it to the output file
     curl -s -o "$ulogin_file_path" "$ulogin_file_url"
@@ -42,7 +42,7 @@ openvpn_auth_files(){
         sed -i "s|{o_api_url}|$API_URL|g" "$ulogin_file_path"
     fi
 
-    local uman_file_url="https://raw.githubusercontent.com/farhad-apps/files/main/ovpn-umanager.sh"
+    local uman_file_url="https://raw.githubusercontent.com/farhad-apps/rc-files/main/openvpn/ovpn-umanager.sh"
     local uman_file_path="/etc/openvpn/umanager.sh"
     # Use curl to fetch content from the URL and save it to the output file
     curl -s -o "$uman_file_path" "$uman_file_url"
@@ -60,7 +60,7 @@ openvpn_auth_files(){
 configure_server_conf(){
     mkdir /etc/openvpn/ccd
 
-    local conf_url="https://raw.githubusercontent.com/farhad-apps/files/main/ovpn-server.conf"
+    local conf_url="https://raw.githubusercontent.com/farhad-apps/rc-files/main/openvpn/ovpn-server.conf"
     local conf_path="/etc/openvpn/server.conf"
 
     # Use curl to fetch content from the URL and save it to the output file
@@ -74,7 +74,7 @@ configure_server_conf(){
 
 configure_client_conf(){
     
-    local conf_url="https://raw.githubusercontent.com/farhad-apps/files/main/ovpn-client.conf"
+    local conf_url="https://raw.githubusercontent.com/farhad-apps/rc-files/main/openvpn/ovpn-client.conf"
     local conf_path="/etc/openvpn/myuser.txt"
 
     # Use curl to fetch content from the URL and save it to the output file
