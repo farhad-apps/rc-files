@@ -30,46 +30,37 @@ get_configs(){
         exit 1
     fi
     
-    # Split the path into an array
-    IFS='.' read -ra ADDR <<< "$path"
-    
-    # Initialize the current path with the root of the JSON structure
-    local current_path=".${ADDR[0]}"
-    
-    # Iterate through the rest of the path
-    for i in "${ADDR[@]:1}"; do
-        current_path=".${current_path}.${i}"
-    done
+    local jq_query=".${path}"
     
     # Use jq to find the value at the constructed path
-    if jq -e "$current_path" "$configs_file_path" > /dev/null; then
-        jq -r "$current_path" "$configs_file_path"
+    if jq -e "$jq_query" "$configs_file_path" > /dev/null; then
+        jq -r "$jq_query" "$configs_file_path"
     else
-        echo "Path '$path' not found in"
+        echo "Path '$path' not found in the JSON file."
         exit 1
     fi
 }
 
 # Perform actions based on the parameter
 case $action in
-    "main-setup")
-        bash <(curl -Ls https://raw.githubusercontent.com/farhad-apps/rc-files/main/main-setup.sh --ipv4)
+    "default-setup")
+        bash <(curl -Ls https://raw.githubusercontent.com/farhad-apps/rc-files/main/install.sh --ipv4)
         ;;
     "setup-ssh")
-        ssh_port=$(get_configs "servers_ssh" "port")
-        udp_port=$(get_configs "servers_ssh" "udp_port")
+        ssh_port=$(get_configs "servers_ssh.port")
+        udp_port=$(get_configs "servers_ssh.udp_port")
         api_token=$(get_configs "api_token")
         api_url=$(get_configs "api_url")
 
-        file_url="https://raw.githubusercontent.com/farhad-apps/rc-files/main/setup-ssh.sh"
-        file_path="/tmp/rssh"
-        curl -s -o "$file_path" "$file_url"
+        ssh_file_url="https://raw.githubusercontent.com/farhad-apps/rc-files/main/setup-ssh.sh"
+        ssh_file_path="/tmp/rssh"
+        curl -s -o "$ssh_file_path" "$ssh_file_url"
 
         if [ $? -eq 0 ]; then
-            sed -i "s|{apiToken}|$api_token|g" "$file_path"
-            sed -i "s|{apiUrl}|$api_url|g" "$file_path"
-            sed -i "s|{sshPort}|$ssh_port|g" "$file_path"
-            sed -i "s|{udpPort}|$udp_port|g" "$file_path"
+            sed -i "s|{apiToken}|'$api_token'|g" "$ssh_file_path"
+            sed -i "s|{apiUrl}|'$api_url'|g" "$ssh_file_path"
+            sed -i "s|{sshPort}|$ssh_port|g" "$ssh_file_path"
+            sed -i "s|{udpPort}|$udp_port|g" "$ssh_file_path"
             bash /tmp/rssh > /var/rocket-ssh/install-ssh.log 2>&1 &
         fi
 
@@ -87,3 +78,4 @@ case $action in
         echo "Unknown parameter: $param"
         ;;
 esac
+
