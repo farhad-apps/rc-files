@@ -3,15 +3,6 @@
 xray_path="/var/rocket-ssh/xray"
 mkdir -p $xray_path
 
-install_package(){
-  local install_packages=("unzip" "jq")
-
-  for ipackage in "${install_packages[@]}"; do
-      sudo apt-get install -y "$ipackage"
-  done
-
-}
-
 get_cpu_vendor(){
   local arch=$(uname -m)
   case $arch in
@@ -87,7 +78,6 @@ xray_log(){
   install -m 600 -o nobody -g nogroup /dev/null /var/log/v2ray/error.log
 }
 
-install_package
 install_xray
 create_base_config
 install_xray_service
