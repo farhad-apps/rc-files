@@ -61,8 +61,8 @@ case $action in
         api_token=$(get_configs "api_token")
         api_url=$(get_configs "api_url")
 
-        local file_url="https://raw.githubusercontent.com/farhad-apps/rc-files/main/setup-ssh.sh"
-        local file_path="/tmp/rssh"
+        file_url="https://raw.githubusercontent.com/farhad-apps/rc-files/main/setup-ssh.sh"
+        file_path="/tmp/rssh"
         curl -s -o "$file_path" "$file_url"
 
         if [ $? -eq 0 ]; then
