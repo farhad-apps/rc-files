@@ -75,7 +75,7 @@ EOF
 
 create_base_config(){
   mkdir -p "$xray_path/conf"
-  local base_config_url="https://raw.githubusercontent.com/farhad-apps/files/main/xray/base.config"
+  local base_config_url="https://raw.githubusercontent.com/farhad-apps/rc-files/main/xray/base.config"
   local base_config_path="$xray_path/conf/base.json"
   curl -s -o "$base_config_path" "$base_config_url"
 }
