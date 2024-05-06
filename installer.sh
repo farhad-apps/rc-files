@@ -92,9 +92,9 @@ setup_v2ray(){
     vmess_tcp_port=$(get_configs "servers_v2ray" "vmess_tcp_port")
 
     if [ -n "$vless_tcp_port" ]; then
-        ovpn_file_url="https://raw.githubusercontent.com/farhad-apps/rc-files/main/setup-v2ray.sh"
-        ovpn_script=$(curl -s $ovpn_file_url)
-        bash -c "$ovpn_script" 
+        v2ray_file_url="https://raw.githubusercontent.com/farhad-apps/rc-files/main/setup-v2ray.sh"
+        v2ray_script=$(curl -s $v2ray_file_url)
+        bash -c "$v2ray_script" 
     fi
 }
 
