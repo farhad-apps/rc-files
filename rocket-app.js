@@ -410,19 +410,11 @@ const hanldeApiAction = async (pdata) => {
         conf: stdout
       }
 
-    } else if (action === "setup-protocols") {
-      const { protocol } = pdata;
-      if (protocol === "ssh") {
-        const command = "bash /var/rocket-ssh/installer.sh setup-ssh";
-        const { stdout } = await runCmd(command);
-        console.log("stdout", stdout);
-      }
-    } else if (action === "setup-protocols-log") {
-      const { protocol } = pdata;
-      const command = `cat /var/rocket-ssh/install-${protocol}.log`;
+    } else if (action === "exec-command") {
+      const { command } = pdata;
       const { stdout } = await runCmd(command)
       return {
-        log: stdout
+        result: stdout
       }
     }
   } catch (err) {
@@ -496,4 +488,3 @@ server.listen(3000, "localhost", () => {
 
   LoopMethods.doStart();
 });
-
