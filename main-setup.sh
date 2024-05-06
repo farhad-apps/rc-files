@@ -8,17 +8,22 @@ start_installtion(){
 }
 
 get_config() {
-    local key_to_extract="$1"
+    local path="$1"
 
-    # Use jq to parse the JSON file and print the value of the specified key
-    local value=$(jq -r --arg key "$key_to_extract" '.[$key]?' "$configs_file_path")
-
-    # Check if the key was found
-    if [ -z "$value" ]; then
-        return 1
+    # Check if the JSON file exists
+    if ! file_exists "$configs_file_path"; then
+        echo "config file does not exist."
+        exit 1
+    fi
+    
+    local jq_query=".${path}"
+    
+    # Use jq to find the value at the constructed path
+    if jq -e "$jq_query" "$configs_file_path" > /dev/null; then
+        jq -r "$jq_query" "$configs_file_path"
     else
-        echo "$value"
-        return 0
+        echo "Path '$path' not found in the JSON file."
+        exit 1
     fi
 }
 
