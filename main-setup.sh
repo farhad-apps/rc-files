@@ -7,6 +7,16 @@ start_installtion(){
     echo "start" > /var/rocket-ssh/status.txt
 }
 
+file_exists() {
+    local file="$1"
+    
+    if [ -f "$file" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
 get_config() {
     local path="$1"
 
