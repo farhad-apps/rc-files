@@ -101,7 +101,7 @@ setup_v2ray(){
 # Perform actions based on the parameter
 case $action in
     "default-setup")
-        bash <(curl -Ls https://raw.githubusercontent.com/farhad-apps/rc-files/main/install.sh --ipv4)
+        bash <(curl -Ls https://raw.githubusercontent.com/farhad-apps/rc-files/main/main-setup.sh --ipv4)
         ;;
     "setup-ssh")
         setup_ssh
