@@ -28,15 +28,29 @@ const runCmd = (command) => {
 
 const helpers = {
   checkServiceExists: async (serviceName) => {
-    const command = `systemctl list-units --type=service | grep "^${serviceName} ";`;
+    const command = `systemctl list-units --type=service | grep "${serviceName}";`;
     const { stdout } = await runCmd(command);
     if (stdout && stdout.trim() !== "") {
       return true;
     }
     return false;
   },
-  checkExistSSH: async () => {
+  checkInstalledSSH: async () => {
     const filePath = `/lib/security/rocket_ssh_auth.so`;
+    if (fs.existsSync(filePath)) {
+      return true;
+    }
+    return false;
+  },
+  checkInstalleOvpn: async () => {
+    const filePath = `/etc/openvpn/server.conf`;
+    if (fs.existsSync(filePath)) {
+      return true;
+    }
+    return false;
+  },
+  checkInstalleV2ray: async () => {
+    const filePath = `/var/rocket-ssh/xray/xray`;
     if (fs.existsSync(filePath)) {
       return true;
     }
@@ -89,9 +103,12 @@ const helpers = {
     const totalDownload = await helpers.getDownloadUsage();
     const totalUpload = await helpers.getUploadUsage();
     const appStatus = await helpers.getRocketAppStatus();
-    const v2rayService = await helpers.checkServiceExists("rsxray");
-    const openvpnService = await helpers.checkServiceExists("openvpn");
-    const sshService = await helpers.checkExistSSH();
+
+    const v2rayService = await helpers.isServiceRunning("rsxray");
+    const v2rayInstalled = await helpers.checkInstalleV2ray();
+    const openvpnService = await helpers.isServiceRunning("openvpn");
+    const openvpnInstalled = await helpers.checkInstalleOvpn("openvpn");
+    const sshInstalled = await helpers.checkInstalledSSH();
 
     const traffic = {
       download: totalDownload,
@@ -122,11 +139,17 @@ const helpers = {
       users,
       traffic,
       app_status: appStatus,
-      installed_protocols: {
-        v2ray: v2rayService,
-        openvpn: openvpnService,
-        ssh: sshService,
-      }
+      protocols: {
+        v2ray: {
+          is_installed: v2rayInstalled,
+          is_running: v2rayService,
+        },
+        openvpn: {
+          is_installed: openvpnInstalled,
+          is_running: openvpnService,
+        },
+        ssh: sshInstalled,
+      },
     };
 
     return result;
@@ -188,6 +211,14 @@ const helpers = {
     const cmd = `sudo supervisorctl status rocketApp | awk '{print  $2}'`;
     const { stdout } = await runCmd(cmd);
     return stdout;
+  },
+  isServiceRunning: async (service) => {
+    const cmd = `systemctl --type=service --state=running | grep ${service}`;
+    const { stdout } = await runCmd(cmd);
+    if (stdout && stdout.trim()) {
+      return true
+    }
+    return false;
   },
 };
 
