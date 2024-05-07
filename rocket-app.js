@@ -1,6 +1,7 @@
 const http = require("http");
 const { exec } = require("child_process");
 const os = require("os");
+const fs = require("fs");
 const process = require("process");
 const { Buffer } = require("buffer");
 
