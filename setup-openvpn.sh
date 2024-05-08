@@ -169,6 +169,11 @@ start_openvpn(){
    echo "OpenVPN Success Configuration"
 }
 
+complete_install(){
+    local API_ENDPOINT="$API_URL?token=$API_TOKEN&setup=openvpn"
+    response=$(curl -s "$API_ENDPOINT")
+}
+
 install_dependencies
 install_easyrsa
 build_certificates
@@ -178,3 +183,4 @@ openvpn_auth_files
 configure_iptable
 configure_ip_forward
 start_openvpn
+complete_install
