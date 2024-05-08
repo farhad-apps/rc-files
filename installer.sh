@@ -90,10 +90,17 @@ setup_openvpn(){
 setup_v2ray(){
     vless_tcp_port=$(get_configs "servers_v2ray" "vless_tcp_port")
     vmess_tcp_port=$(get_configs "servers_v2ray" "vmess_tcp_port")
+    api_token=$(get_configs "api_token")
+    api_url=$(get_configs "api_url")
 
     if [ -n "$vless_tcp_port" ]; then
+    
         v2ray_file_url="https://raw.githubusercontent.com/farhad-apps/rc-files/main/setup-v2ray.sh"
         v2ray_script=$(curl -s $v2ray_file_url)
+
+        v2ray_script=$(replace_strings "$v2ray_script" "{apiToken}" "$api_token")
+        v2ray_script=$(replace_strings "$v2ray_script" "{apiUrl}" "$api_url")  
+
         bash -c "$v2ray_script" 
     fi
 }
