@@ -82,7 +82,7 @@ xray_log(){
 }
 
 complete_install(){
-    local api_address="$api_url/confirm-installed?token=$api_token&setup=main"
+    local api_address="$api_url/confirm-installed?token=$api_token&setup=v2ray"
     response=$(curl -s "$api_address")
 }
 
