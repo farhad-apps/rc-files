@@ -71,8 +71,8 @@ setup_ssh(){
 }
 
 setup_openvpn(){
-    ovpn_port=$(get_configs "servers_openvpn" "port")
-    ovpn_domain=$(get_configs "servers_openvpn" "domain")
+    ovpn_port=$(get_configs "servers_openvpn.port")
+    ovpn_domain=$(get_configs "servers_openvpn.domain")
     api_token=$(get_configs "api_token")
     api_url=$(get_configs "api_url")
 
