@@ -1,7 +1,7 @@
 #!/bin/bash
 
-BASE_URL="{o_api_url}";
-API_TOKEN="{o_api_token}";
+api_url="{openApiUrl}";
+api_token="{openApiToken}";
 
 server_ip=$(hostname -I | awk '{print $1}')
 
@@ -21,14 +21,14 @@ EOF
 encodedData=$(echo -n "$DATA" | base64 -w 0)
 
 if [ "$script_type" == "client-connect" ]; then
-    apiUrl="${BASE_URL}/ovpn/uconnect?token=${API_TOKEN}"
+    apiAddUrl="${api_url}/ovpn/uconnect?token=${api_token}"
 else
-    apiUrl="${BASE_URL}/ovpn/udisconnect?token=${API_TOKEN}"
+    apiAddUrl="${api_url}/ovpn/udisconnect?token=${api_token}"
 fi
 
 jsonData="{\"data\": \"$encodedData\"}"
 
-response=$(curl -s -o /dev/null -w "%{http_code}" -X POST -H "Content-Type: application/json" -d "$jsonData" "$apiUrl")
+response=$(curl -s -o /dev/null -w "%{http_code}" -X POST -H "Content-Type: application/json" -d "$jsonData" "$apiAddUrl")
 
 if [ "$response" -eq  200 ]; then
     exit 0

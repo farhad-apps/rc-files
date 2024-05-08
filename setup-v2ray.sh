@@ -90,3 +90,4 @@ install_xray
 create_base_config
 install_xray_service
 xray_log
+complete_install

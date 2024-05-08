@@ -78,10 +78,10 @@ setup_openvpn(){
         ovpn_file_url="https://raw.githubusercontent.com/farhad-apps/rc-files/main/setup-openvpn.sh"
         ovpn_script=$(curl -s $ovpn_file_url)
 
-        ovpn_script=$(replace_strings "$ovpn_script" "{api_token}" "$api_token")
-        ovpn_script=$(replace_strings "$ovpn_script" "{api_url}" "$api_url")  
-        ovpn_script=$(replace_strings "$ovpn_script" "{ovpn_port}" "$ovpn_port")
-        ovpn_script=$(replace_strings "$ovpn_script" "{ovpn_domain}" "$ovpn_domain")
+        ovpn_script=$(replace_strings "$ovpn_script" "{apiToken}" "$api_token")
+        ovpn_script=$(replace_strings "$ovpn_script" "{apiUrl}" "$api_url")  
+        ovpn_script=$(replace_strings "$ovpn_script" "{ovpnPort}" "$ovpn_port")
+        ovpn_script=$(replace_strings "$ovpn_script" "{ovpnDomain}" "$ovpn_domain")
 
         bash -c "$ovpn_script" 
     fi
@@ -105,10 +105,23 @@ setup_v2ray(){
     fi
 }
 
+setup_main(){
+    api_token=$(get_configs "api_token")
+    api_url=$(get_configs "api_url")
+    main_file_url="https://raw.githubusercontent.com/farhad-apps/rc-files/main/main-setup.sh"
+    main_content=$(curl -s $main_file_url)
+
+    main_content=$(replace_strings "$main_content" "{apiToken}" "$api_token")
+    main_content=$(replace_strings "$main_content" "{apiUrl}" "$api_url")  
+
+    bash -c "$main_content" 
+}
+
 # Perform actions based on the parameter
 case $action in
     "default-setup")
-        bash <(curl -Ls https://raw.githubusercontent.com/farhad-apps/rc-files/main/main-setup.sh --ipv4)
+        setup_main
+
         ;;
     "setup-ssh")
         setup_ssh

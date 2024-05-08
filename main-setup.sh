@@ -1,36 +1,8 @@
 #!/bin/bash
 
-configs_file_path="/var/rocket-ssh/configs.json"
 
-file_exists() {
-    local file="$1"
-    
-    if [ -f "$file" ]; then
-        return 0
-    else
-        return 1
-    fi
-}
-
-get_config() {
-    local path="$1"
-
-    # Check if the JSON file exists
-    if ! file_exists "$configs_file_path"; then
-        echo "config file does not exist."
-        exit 1
-    fi
-    
-    local jq_query=".${path}"
-    
-    # Use jq to find the value at the constructed path
-    if jq -e "$jq_query" "$configs_file_path" > /dev/null; then
-        jq -r "$jq_query" "$configs_file_path"
-    else
-        echo "Path '$path' not found in the JSON file."
-        exit 1
-    fi
-}
+api_token="{apiToken}"
+api_url="{apiUrl}"
 
 # Function to check and update needrestart configuration
 config_needrestart() {
@@ -95,8 +67,8 @@ configure_rocket_app(){
     if [ $? -eq 0 ]; then
         local api_token=$(get_config "api_token")
         local api_url=$(get_config "api_url")
-        sed -i "s|{api_token}|$api_token|g" "$file_path"
-        sed -i "s|{api_url}|$api_url|g" "$file_path"
+        sed -i "s|{rapiToken}|$api_token|g" "$file_path"
+        sed -i "s|{rapiUrl}|$api_url|g" "$file_path"
     fi
  
 }
@@ -128,10 +100,8 @@ ENDOFFILE
 
 
 complete_install(){
-    local api_token=$(get_config "api_token")
-    local api_url=$(get_config "api_url")
-    local API_ENDPOINT="$api_token?token=$api_token&setup=main"
-    response=$(curl -s "$API_ENDPOINT")
+    local api_address="$api_token?token=$api_token&setup=main"
+    response=$(curl -s "$api_address")
 }
 
 

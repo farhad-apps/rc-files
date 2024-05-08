@@ -1,9 +1,9 @@
 #!/bin/bash
 
-PORT="{ovpn_port}"
-DOMAIN="{ovpn_domain}"
-API_TOKEN="{api_token}"
-API_URL="{api_url}"
+ovpn_port="{ovpnPort}"
+ovpn_domain="{ovpnDomain}"
+api_token="{apiToken}"
+api_url="{apiUrl}"
 
 install_dependencies(){
   apt-get install -y openvpn iptables ca-certificates gnupg
@@ -38,8 +38,8 @@ openvpn_auth_files(){
     curl -s -o "$ulogin_file_path" "$ulogin_file_url"
 
     if [ $? -eq 0 ]; then
-        sed -i "s|{o_api_token}|$API_TOKEN|g" "$ulogin_file_path"
-        sed -i "s|{o_api_url}|$API_URL|g" "$ulogin_file_path"
+        sed -i "s|{openApiToken}|$api_token|g" "$ulogin_file_path"
+        sed -i "s|{openApiUrl}|$api_url|g" "$ulogin_file_path"
     fi
 
     local uman_file_url="https://raw.githubusercontent.com/farhad-apps/rc-files/main/openvpn/ovpn-umanager.sh"
@@ -48,8 +48,8 @@ openvpn_auth_files(){
     curl -s -o "$uman_file_path" "$uman_file_url"
 
     if [ $? -eq 0 ]; then
-        sed -i "s|{o_api_token}|$API_TOKEN|g" "$uman_file_path"
-        sed -i "s|{o_api_url}|$API_URL|g" "$uman_file_path"
+        sed -i "s|{openApiToken}|$api_token|g" "$uman_file_path"
+        sed -i "s|{openApiUrl}|$api_url|g" "$uman_file_path"
     fi
 
     chmod +x /etc/openvpn/ulogin.sh
@@ -68,7 +68,7 @@ configure_server_conf(){
 
     if [ $? -eq 0 ]; then
 
-        sed -i "s|{port}|$PORT|g" "$conf_path"
+        sed -i "s|{openPort}|$ovpn_port|g" "$conf_path"
     fi
 }
 
@@ -82,8 +82,8 @@ configure_client_conf(){
 
     if [ $? -eq 0 ]; then
 
-        sed -i "s|{o_domain}|$DOMAIN|g" "$conf_path"
-        sed -i "s|{o_port}|$PORT|g" "$conf_path"
+        sed -i "s|{openDomain}|$ovpn_domain|g" "$conf_path"
+        sed -i "s|{openPort}|$ovpn_port|g" "$conf_path"
 
         ca_file="/etc/openvpn/ca.crt"
         tls_file="/etc/openvpn/tc.key"
@@ -123,7 +123,7 @@ iptables -t nat -I POSTROUTING 1 -s 10.8.0.0/24 -o $NIC -j MASQUERADE
 iptables -I INPUT 1 -i tun0 -j ACCEPT
 iptables -I FORWARD 1 -i $NIC -o tun0 -j ACCEPT
 iptables -I FORWARD 1 -i tun0 -o $NIC -j ACCEPT
-iptables -I INPUT 1 -i $NIC -p $PROTOCOL --dport $PORT -j ACCEPT" >/etc/openvpn/add-iptables-rules.sh
+iptables -I INPUT 1 -i $NIC -p $PROTOCOL --dport $ovpn_port -j ACCEPT" >/etc/openvpn/add-iptables-rules.sh
 
 # Script to remove rules
 echo "#!/bin/sh
@@ -131,7 +131,7 @@ iptables -t nat -D POSTROUTING -s 10.8.0.0/24 -o $NIC -j MASQUERADE
 iptables -D INPUT -i tun0 -j ACCEPT
 iptables -D FORWARD -i $NIC -o tun0 -j ACCEPT
 iptables -D FORWARD -i tun0 -o $NIC -j ACCEPT
-iptables -D INPUT -i $NIC -p $PROTOCOL --dport $PORT -j ACCEPT" >/etc/openvpn/rm-iptables-rules.sh
+iptables -D INPUT -i $NIC -p $PROTOCOL --dport $ovpn_port -j ACCEPT" >/etc/openvpn/rm-iptables-rules.sh
 
 echo "[Unit]
 Description=iptables rules for OpenVPN
@@ -170,8 +170,8 @@ start_openvpn(){
 }
 
 complete_install(){
-    local API_ENDPOINT="$API_URL?token=$API_TOKEN&setup=openvpn"
-    response=$(curl -s "$API_ENDPOINT")
+    local api_address="$api_url?token=$api_token&setup=openvpn"
+    response=$(curl -s "$api_address")
 }
 
 install_dependencies

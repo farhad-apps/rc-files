@@ -5,6 +5,7 @@ udp_port={udpPort}
 api_token={apiToken}
 api_url={apiUrl}
 
+
 # Function to install BadVPN using a script
 setup_udpgw_service() {
    

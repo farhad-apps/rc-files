@@ -5,8 +5,8 @@ const fs = require("fs");
 const process = require("process");
 const { Buffer } = require("buffer");
 
-const API_URL = "{api_url}";
-const API_TOKEN = "{api_token}";
+const API_URL = "{rapiUrl}";
+const API_TOKEN = "{rapiToken}";
 
 var settings = {
   calc_traffic: 1,
