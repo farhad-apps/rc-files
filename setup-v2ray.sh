@@ -1,5 +1,8 @@
 #!/bin/bash
 
+api_token={apiToken}
+api_url={apiUrl}
+
 xray_path="/var/rocket-ssh/xray"
 mkdir -p $xray_path
 
@@ -76,6 +79,11 @@ xray_log(){
   touch /var/log/v2ray/error.log
   install -d -m 700 -o nobody -g nogroup /var/log/v2ray/
   install -m 600 -o nobody -g nogroup /dev/null /var/log/v2ray/error.log
+}
+
+complete_install(){
+    local API_ENDPOINT="$api_url?token=$api_token&setup=v2ray"
+    response=$(curl -s "$API_ENDPOINT")
 }
 
 install_xray
