@@ -38,7 +38,6 @@ get_configs(){
     if jq -e "$jq_query" "$configs_file_path" > /dev/null; then
         jq -r "$jq_query" "$configs_file_path"
     else
-        echo "Path '$path' not found in the JSON file."
         exit 1
     fi
 }
@@ -90,8 +89,8 @@ setup_openvpn(){
 }
 
 setup_v2ray(){
-    vless_tcp_port=$(get_configs "servers_v2ray" "vless_tcp_port")
-    vmess_tcp_port=$(get_configs "servers_v2ray" "vmess_tcp_port")
+    vless_tcp_port=$(get_configs "servers_v2ray.vless_tcp_port")
+    vmess_tcp_port=$(get_configs "servers_v2ray.vmess_tcp_port")
     api_token=$(get_configs "api_token")
     api_url=$(get_configs "api_url")
 
