@@ -112,14 +112,10 @@ setup_main(){
     api_url=$(get_configs "api_url")
     main_file_url="https://raw.githubusercontent.com/farhad-apps/rc-files/main/main-setup.sh"
     main_content=$(curl -s $main_file_url)
-
-    echo "api_token: $api_token"
-    echo "api_url: $api_url"
     
     main_content=$(replace_strings "$main_content" "{apiToken}" "$api_token")
     main_content=$(replace_strings "$main_content" "{apiUrl}" "$api_url")  
 
-    echo $main_content
     bash -c "$main_content" 
 }
 

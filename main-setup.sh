@@ -98,9 +98,7 @@ ENDOFFILE
 
 
 complete_install(){
-    echo "complete_install"; 
-    local api_address="$api_url?token=$api_token&setup=main"
-    echo "api_address: $api_address"
+    local api_address="$api_url/confirm-installed?token=$api_token&setup=main"
     response=$(curl -s "$api_address")
 }
 
