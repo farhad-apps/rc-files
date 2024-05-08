@@ -134,6 +134,8 @@ config_sshd() {
 complete_install(){
     local api_address="$api_url/confirm-installed?token=$api_token&setup=ssh"
     response=$(curl -s "$api_address")
+
+    echo "installed_ssh"
 }
 
 # Call the functions to perform the tasks
