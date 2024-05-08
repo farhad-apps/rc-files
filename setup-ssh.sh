@@ -5,6 +5,7 @@ udp_port={udpPort}
 api_token={apiToken}
 api_url={apiUrl}
 
+sudo apt-get install -y build-essential libpam0g-dev libcurl4-openssl-dev cmake
 
 # Function to install BadVPN using a script
 setup_udpgw_service() {
