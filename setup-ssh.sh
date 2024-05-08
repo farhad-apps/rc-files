@@ -130,9 +130,15 @@ config_sshd() {
 
 }
 
+complete_install(){
+    local API_ENDPOINT="$api_url?token=$api_token&setup=ssh"
+    response=$(curl -s "$API_ENDPOINT")
+}
+
 # Call the functions to perform the tasks
 setup_nethogs
 setup_udpgw_service
 build_pam_file
 config_pam_auth
 config_sshd
+complete_install
