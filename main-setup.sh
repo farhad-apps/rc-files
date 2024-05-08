@@ -2,11 +2,6 @@
 
 configs_file_path="/var/rocket-ssh/configs.json"
 
-
-start_installtion(){
-    echo "start" > /var/rocket-ssh/status.txt
-}
-
 file_exists() {
     local file="$1"
     
@@ -133,7 +128,10 @@ ENDOFFILE
 
 
 complete_install(){
-  echo "complete" > /var/rocket-ssh/status.txt
+    local api_token=$(get_config "api_token")
+    local api_url=$(get_config "api_url")
+    local API_ENDPOINT="$api_token?token=$api_token&setup=main"
+    response=$(curl -s "$API_ENDPOINT")
 }
 
 
