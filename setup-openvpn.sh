@@ -170,9 +170,10 @@ start_openvpn(){
 }
 
 complete_install(){
-    local api_address="$api_url?token=$api_token&setup=openvpn"
+    local api_address="$api_url?token=$api_token&setup=main"
     response=$(curl -s "$api_address")
 }
+
 
 install_dependencies
 install_easyrsa

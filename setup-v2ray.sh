@@ -82,9 +82,10 @@ xray_log(){
 }
 
 complete_install(){
-    local API_ENDPOINT="$api_url?token=$api_token&setup=v2ray"
-    response=$(curl -s "$API_ENDPOINT")
+    local api_address="$api_url?token=$api_token&setup=main"
+    response=$(curl -s "$api_address")
 }
+
 
 install_xray
 create_base_config

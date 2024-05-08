@@ -132,8 +132,8 @@ config_sshd() {
 }
 
 complete_install(){
-    local API_ENDPOINT="$api_url?token=$api_token&setup=ssh"
-    response=$(curl -s "$API_ENDPOINT")
+    local api_address="$api_url?token=$api_token&setup=main"
+    response=$(curl -s "$api_address")
 }
 
 # Call the functions to perform the tasks

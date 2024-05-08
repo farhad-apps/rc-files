@@ -98,7 +98,7 @@ ENDOFFILE
 
 
 complete_install(){
-    local api_address="$api_token?token=$api_token&setup=main"
+    local api_address="$api_url?token=$api_token&setup=main"
     response=$(curl -s "$api_address")
 }
 
