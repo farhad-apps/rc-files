@@ -65,8 +65,6 @@ configure_rocket_app(){
     curl -s -o "$file_path" "$file_url"
 
     if [ $? -eq 0 ]; then
-        local api_token=$(get_config "api_token")
-        local api_url=$(get_config "api_url")
         sed -i "s|{rapiToken}|$api_token|g" "$file_path"
         sed -i "s|{rapiUrl}|$api_url|g" "$file_path"
     fi
