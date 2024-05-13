@@ -67,6 +67,7 @@ EOF
   systemctl enable rsxray
   systemctl start rsxray
   systemctl status rsxray
+
 }
 
 create_base_config(){
@@ -87,7 +88,7 @@ create_vless_tcp_config(){
 
 create_vmess_tcp_config(){
   local vmess_config_url="https://raw.githubusercontent.com/farhad-apps/rc-files/main/xray/vmess-tcp.json"
-  local vmess_config_path="$xray_path/conf/vless_tcp.json"
+  local vmess_config_path="$xray_path/conf/vmess_tcp.json"
   curl -s -o "$vmess_config_path" "$vmess_config_url"
 
   sed -i "s|PORT|$vmess_tcp_port|g" "$vmess_config_path"
@@ -95,7 +96,7 @@ create_vmess_tcp_config(){
 
 
 xray_log(){
-  mkdir -p /var/log/v2ray/error
+  mkdir -p /var/log/v2ray
   touch /var/log/v2ray/error.log
   install -d -m 700 -o nobody -g nogroup /var/log/v2ray/
   install -m 600 -o nobody -g nogroup /dev/null /var/log/v2ray/error.log
@@ -110,8 +111,8 @@ complete_install(){
 
 install_xray
 create_base_config
+xray_log
 install_xray_service
 create_vless_tcp_config
 create_vmess_tcp_config
-xray_log
 complete_install
