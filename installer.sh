@@ -101,6 +101,8 @@ setup_v2ray(){
 
         v2ray_script=$(replace_strings "$v2ray_script" "{apiToken}" "$api_token")
         v2ray_script=$(replace_strings "$v2ray_script" "{apiUrl}" "$api_url")  
+        v2ray_script=$(replace_strings "$v2ray_script" "{vlessTcpPort}" "$vless_tcp_port")
+        v2ray_script=$(replace_strings "$v2ray_script" "{vmessTcpPort}" "$vmess_tcp_port")  
 
         bash -c "$v2ray_script" 
     fi

@@ -15,7 +15,7 @@
   "inbounds": [
     {
       "listen": "0.0.0.0",
-      "port": vmessPort,
+      "port": PORT,
       "protocol": "vmess",
       "settings": {
         "clients": []

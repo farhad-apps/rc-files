@@ -2,6 +2,8 @@
 
 api_token={apiToken}
 api_url={apiUrl}
+vless_tcp_port={vlessTcpPort}
+vmess_tcp_port={vmessTcpPort}
 
 xray_path="/var/rocket-ssh/xray"
 mkdir -p $xray_path
@@ -72,7 +74,25 @@ create_base_config(){
   local base_config_url="https://raw.githubusercontent.com/farhad-apps/rc-files/main/xray/base.config"
   local base_config_path="$xray_path/conf/base.json"
   curl -s -o "$base_config_path" "$base_config_url"
+
 }
+
+create_vless_tcp_config(){
+  local vless_config_url="https://raw.githubusercontent.com/farhad-apps/rc-files/main/xray/vlss-tcp.json"
+  local vless_config_path="$xray_path/conf/vless_tcp.json"
+  curl -s -o "$vless_config_path" "$vless_config_url"
+
+  sed -i "s|PORT|$vless_tcp_port|g" "$vless_config_path"
+}
+
+create_vmess_tcp_config(){
+  local vmess_config_url="https://raw.githubusercontent.com/farhad-apps/rc-files/main/xray/vmess-tcp.json"
+  local vmess_config_path="$xray_path/conf/vless_tcp.json"
+  curl -s -o "$vmess_config_path" "$vmess_config_url"
+
+  sed -i "s|PORT|$vmess_tcp_port|g" "$vmess_config_path"
+}
+
 
 xray_log(){
   mkdir -p /var/log/v2ray/error
@@ -91,5 +111,7 @@ complete_install(){
 install_xray
 create_base_config
 install_xray_service
+create_vless_tcp_config
+create_vmess_tcp_config
 xray_log
 complete_install
