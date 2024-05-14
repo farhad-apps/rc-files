@@ -134,7 +134,7 @@ cat <<EOF >${xray_conf_path}y_deco_api.json
         "address": "127.0.0.1"
       },
       "tag": "api",
-      "port": 100100
+      "port": 65432
     }
   ]
 }
