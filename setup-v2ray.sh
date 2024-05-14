@@ -72,7 +72,7 @@ EOF
 }
 
 create_default_configs(){
-
+  mkdir -p $xray_conf_path
 cat <<EOF >${xray_conf_path}00_log.json
 {
   "log": {
