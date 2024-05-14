@@ -2,16 +2,6 @@
   "log": {
     "loglevel": "warning"
   },
-  "routing": {
-    "domainStrategy": "AsIs",
-    "rules": [
-      {
-        "type": "field",
-        "ip": ["geoip:private"],
-        "outboundTag": "block"
-      }
-    ]
-  },
   "inbounds": [
     {
       "listen": "0.0.0.0",
@@ -23,16 +13,6 @@
       "streamSettings": {
         "network": "tcp"
       }
-    }
-  ],
-  "outbounds": [
-    {
-      "protocol": "freedom",
-      "tag": "direct"
-    },
-    {
-      "protocol": "blackhole",
-      "tag": "block"
     }
   ]
 }
