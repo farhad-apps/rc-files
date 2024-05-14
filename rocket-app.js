@@ -246,8 +246,8 @@ const helpers = {
     return find;
   },
   v2rayActionUser: async (action, username, uuid) => {
-    const vmessFilePath = "/var/rocket-ssh/xray/conf/vmess_tcp.json";
-    const vlessFilePath = "/var/rocket-ssh/xray/conf/vless_tcp.json";
+    const vmessFilePath = "/var/rocket-ssh/xray/conf/02_vmess_tcp.json";
+    const vlessFilePath = "/var/rocket-ssh/xray/conf/01_vless_tcp.json";
     const userEmail = `${username}@rocket-ssh.com`
     
     helpers.v2rayActionUserFile(vmessFilePath, action, uuid, userEmail);
