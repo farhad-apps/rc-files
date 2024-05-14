@@ -6,6 +6,7 @@ vless_tcp_port={vlessTcpPort}
 vmess_tcp_port={vmessTcpPort}
 
 xray_path="/var/rocket-ssh/xray"
+xray_conf_path="/var/rocket-ssh/xray/conf/"
 mkdir -p $xray_path
 
 get_cpu_vendor(){
@@ -70,30 +71,118 @@ EOF
 
 }
 
-create_base_config(){
-  mkdir -p "$xray_path/conf"
-  local base_config_url="https://raw.githubusercontent.com/farhad-apps/rc-files/main/xray/base.config"
-  local base_config_path="$xray_path/conf/base.json"
-  curl -s -o "$base_config_path" "$base_config_url"
+create_default_configs(){
+
+cat <<EOF >${xray_conf_path}00_log.json
+{
+  "log": {
+    "error": "/var/log/v2ray/error.log",
+    "loglevel": "warning",
+    "dnsLog": false
+  }
+}
+EOF
+
+
+cat <<EOF >${xray_conf_path}01_vless_tcp.json
+{
+  "inbounds": [
+    {
+      "listen": "0.0.0.0",
+      "port": ${vless_tcp_port},
+      "protocol": "vless",
+      "tag": "VLESSTCP",
+      "settings": {
+        "clients": [],
+        "decryption": "none",
+        "fallbacks": []
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "none"
+      }
+    }
+  ]
+}
+EOF
+
+cat <<EOF >${xray_conf_path}02_vmess_tcp.json
+{
+  "inbounds": [
+    {
+      "listen": "0.0.0.0",
+      "port": ${vmess_tcp_port},
+      "protocol": "vmess",
+      "tag": "VMESSTCP",
+      "settings": {
+        "clients": []
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "none"
+      }
+    }
+  ]
+}
+EOF
+
+cat <<EOF >${xray_conf_path}w_routing.json
+{
+  "routing": {
+    "rules": [
+      {
+        "inboundTag": ["api"],
+        "outboundTag": "api",
+        "domain": ["domain:gstatic.com", "domain:googleapis.com", "domain:googleapis.cn"],
+        "type": "field",
+        "outboundTag": "z_direct_outbound"
+      }
+    ],
+    "domainStrategy": "AsIs",
+  }
+}
+EOF
+
+cat <<EOF >${xray_conf_path}x_dns.json
+{ 
+  "dns": {
+    "servers": ["localhost"]
+  }
+}
+EOF
+
+cat <<EOF >${xray_conf_path}y_policy.json
+{ 
+  "policy": {
+    "levels": {
+      "0": {
+        "statsUserUplink": true,
+        "statsUserDownlink": true
+      }
+    },
+    "system": {
+      "statsOutboundUplink": true,
+      "statsOutboundDownlink": true
+    }
+  }
+}
+EOF
+
+cat <<EOF >${xray_conf_path}z_direct_outbound.json
+{ 
+  "outbounds": [
+    {
+      "protocol": "freedom",
+      "settings": {
+        "domainStrategy": "UseIP"
+      },
+      "tag": "z_direct_outbound"
+    }
+  ]
+}
+EOF
 
 }
-
-create_vless_tcp_config(){
-  local vless_config_url="https://raw.githubusercontent.com/farhad-apps/rc-files/main/xray/vlss-tcp.json"
-  local vless_config_path="$xray_path/conf/vless_tcp.json"
-  curl -s -o "$vless_config_path" "$vless_config_url"
-
-  sed -i "s|PORT|$vless_tcp_port|g" "$vless_config_path"
-}
-
-create_vmess_tcp_config(){
-  local vmess_config_url="https://raw.githubusercontent.com/farhad-apps/rc-files/main/xray/vmess-tcp.json"
-  local vmess_config_path="$xray_path/conf/vmess_tcp.json"
-  curl -s -o "$vmess_config_path" "$vmess_config_url"
-
-  sed -i "s|PORT|$vmess_tcp_port|g" "$vmess_config_path"
-}
-
 
 xray_log(){
   mkdir -p /var/log/v2ray
@@ -113,6 +202,5 @@ install_xray
 create_base_config
 xray_log
 install_xray_service
-create_vless_tcp_config
-create_vmess_tcp_config
+create_default_configs
 complete_install
