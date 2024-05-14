@@ -137,7 +137,7 @@ cat <<EOF >${xray_conf_path}w_routing.json
         "type": "field"
       }
     ],
-    "domainStrategy": "AsIs",
+    "domainStrategy": "AsIs"
   }
 }
 EOF
