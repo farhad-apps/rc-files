@@ -16,5 +16,10 @@
         "security": "none"
       }
     }
+  ],
+  "outbounds": [
+    {
+      "protocol": "freedom"
+    }
   ]
 }
