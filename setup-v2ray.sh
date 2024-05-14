@@ -201,6 +201,6 @@ complete_install(){
 install_xray
 create_base_config
 xray_log
-install_xray_service
 create_default_configs
+install_xray_service
 complete_install
