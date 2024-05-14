@@ -9,15 +9,11 @@
       "protocol": "vless",
       "settings": {
         "clients": [],
-        "decryption": "none",
-        "fallbacks": [
-          {
-            "dest": 8001
-          }
-        ]
+        "decryption": "none"
       },
       "streamSettings": {
-        "network": "tcp"
+        "network": "tcp",
+        "security": "none"
       }
     }
   ],
