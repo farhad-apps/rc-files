@@ -154,11 +154,19 @@ const helpers = {
 
     return result;
   },
-  createUser: async (username, password) => {
-    const addUserCommand = `sudo adduser ${username} --force-badname --shell /usr/sbin/nologin &`;
-    const setPasswordCommand = `sudo passwd ${username} <<!\n${password}\n${password}\n!`;
-    const fullCommand = `${addUserCommand}\nwait\n${setPasswordCommand}`;
-    await runCmd(fullCommand);
+  createUser: async (username, password, uuid) => {
+
+    if (settings.enabled_ssh) {
+      const addUserCommand = `sudo adduser ${username} --force-badname --shell /usr/sbin/nologin -d /home/rocket-ssh &`;
+      const setPasswordCommand = `sudo passwd ${username} <<!\n${password}\n${password}\n!`;
+      const fullCommand = `${addUserCommand}\nwait\n${setPasswordCommand}`;
+      await runCmd(fullCommand);
+    }
+
+    if (settings.enabled_v2ray) {
+      await helpers.v2rayActionUser("create", username, uuid)
+    }
+
   },
   killUser: async (username) => {
     await runCmd(`sudo killall -u ${username}`);
@@ -167,8 +175,13 @@ const helpers = {
     await runCmd(`sudo timeout 10 killall -u ${username}`);
   },
   removeUser: async (username) => {
-    const cmd = `sudo userdel -r ${username}`;
-    await runCmd(cmd);
+    if (settings.enabled_ssh) {
+      const cmd = `sudo userdel -r ${username}`;
+      await runCmd(cmd);
+    }
+    if (settings.enabled_v2ray) {
+      await helpers.v2rayActionUser("delete", username)
+    }
   },
   getUsersList: async () => {
     const { stdout } = await runCmd("ls /home");
@@ -220,12 +233,58 @@ const helpers = {
     }
     return false;
   },
+  v2rayHasUer: (clients, userEmail) => {
+    var find = false;
+    if (clients && clients.length) {
+      for (var client of clients) {
+        const email = client["email"];
+        if (userEmail === email) {
+          find = true;
+        }
+      }
+    }
+    return find;
+  },
+  v2rayActionUser: async (action, username, uuid) => {
+    const vmessFilePath = "/var/rocket-ssh/xray/conf/vmess_tcp.json";
+    const vlessFilePath = "/var/rocket-ssh/xray/conf/vless_tcp.json";
+    const userEmail = `${username}@rocket-ssh.com`
+    
+    helpers.v2rayActionUserFile(vmessFilePath, action, uuid, userEmail);
+    helpers.v2rayActionUserFile(vlessFilePath, action, uuid, userEmail);
+
+  },
+  v2rayActionUserFile: (filePath, action, uuid, userEmail) => {
+    fs.readFile(filePath, 'utf8', (err, data) => {
+      if (err) {
+        return;
+      }
+      const configs = JSON.parse(data);
+      var lastClients = configs.inbounds[0].settings.clients;
+      if (action === "create") {
+        var findUser = helpers.v2rayHasUer(lastClients, userEmail);
+        if (!findUser) {
+          lastClients.push({
+            id: uuid,
+            level: 0,
+            email: userEmail,
+          })
+        }
+      } else if (action === "delete") {
+        lastClients = lastClients.filter((client) => client.email !== userEmail);
+      }
+      configs.inbounds[0].settings.clients = lastClients;
+      const modifiedData = JSON.stringify(configs, null, 2);
+      fs.writeFile(filePath, modifiedData, 'utf8', (err) => {
+      });
+    });
+  }
 };
 
 const apiActions = {
   createUser: async (pdata) => {
-    const { username, password } = pdata;
-    await helpers.createUser(username, password);
+    const { username, password, uuid } = pdata;
+    await helpers.createUser(username, password, uuid);
   },
   removeUser: async (pdata) => {
     const { username } = pdata;
@@ -316,8 +375,7 @@ const LoopMethods = {
     sendToApi("settings")
       .then((result) => {
         result = JSON.parse(result);
-        const { servers_calc_traffic } = result;
-        settings.calc_traffic = parseInt(servers_calc_traffic);
+        settings = { ...result };
         setTimeout(LoopMethods.getSettings, 10 * 60 * 1000);
       })
       .catch((err) => {
@@ -407,12 +465,20 @@ const hanldeApiAction = async (pdata) => {
         for (var user of users) {
           await apiActions.createUser(user);
         }
+
+        if (settings.enabled_v2ray) {
+          runCmd("systemctl restart rsxray")
+        }
       }
     } else if (action === "remove-users") {
       const { users } = pdata;
       if (users && Array.isArray(users)) {
         for (var user of users) {
           await apiActions.removeUser(user);
+        }
+
+        if (settings.enabled_v2ray) {
+          runCmd("systemctl restart rsxray")
         }
       }
     } else if (action === "sys-data") {
