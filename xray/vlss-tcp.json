@@ -16,11 +16,5 @@
         "security": "none"
       }
     }
-  ],
-  "outbounds": [
-    {
-      "protocol": "freedom",
-      "tag": "direct"
-    }
   ]
 }
