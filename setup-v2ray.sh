@@ -72,7 +72,7 @@ EOF
 }
 
 create_default_configs(){
-  mkdir -p $xray_conf_path
+
 cat <<EOF >${xray_conf_path}00_log.json
 {
   "log": {
@@ -134,8 +134,7 @@ cat <<EOF >${xray_conf_path}w_routing.json
         "inboundTag": ["api"],
         "outboundTag": "api",
         "domain": ["domain:gstatic.com", "domain:googleapis.com", "domain:googleapis.cn"],
-        "type": "field",
-        "outboundTag": "z_direct_outbound"
+        "type": "field"
       }
     ],
     "domainStrategy": "AsIs",
@@ -176,7 +175,7 @@ cat <<EOF >${xray_conf_path}z_direct_outbound.json
       "settings": {
         "domainStrategy": "UseIP"
       },
-      "tag": "z_direct_outbound"
+      "tag": "api"
     }
   ]
 }
@@ -201,6 +200,6 @@ complete_install(){
 install_xray
 create_base_config
 xray_log
-create_default_configs
 install_xray_service
+create_default_configs
 complete_install
