@@ -83,7 +83,6 @@ cat <<EOF >${xray_conf_path}00_log.json
 }
 EOF
 
-
 cat <<EOF >${xray_conf_path}01_vless_tcp.json
 {
   "inbounds": [
@@ -94,8 +93,7 @@ cat <<EOF >${xray_conf_path}01_vless_tcp.json
       "tag": "VLESSTCP",
       "settings": {
         "clients": [],
-        "decryption": "none",
-        "fallbacks": []
+        "decryption": "none"
       },
       "streamSettings": {
         "network": "tcp",
@@ -126,32 +124,30 @@ cat <<EOF >${xray_conf_path}02_vmess_tcp.json
 }
 EOF
 
-cat <<EOF >${xray_conf_path}w_routing.json
+cat <<EOF >${xray_conf_path}y_deco_api.json
 {
-  "routing": {
-    "rules": [
-      {
-        "inboundTag": ["api"],
-        "outboundTag": "api",
-        "domain": ["domain:gstatic.com", "domain:googleapis.com", "domain:googleapis.cn"],
-        "type": "field"
-      }
-    ],
-    "domainStrategy": "AsIs"
-  }
+  "inbounds": [
+    {
+      "listen": "127.0.0.1",
+      "protocol": "dokodemo-door",
+      "settings": {
+        "address": "127.0.0.1"
+      },
+      "tag": "api",
+      "port": 100100
+    }
+  ]
 }
 EOF
 
-cat <<EOF >${xray_conf_path}x_dns.json
-{ 
-  "dns": {
-    "servers": ["localhost"]
-  }
-}
-EOF
-
-cat <<EOF >${xray_conf_path}y_policy.json
-{ 
+cat <<EOF >${xray_conf_path}z_configs.json
+{
+  "outbounds": [
+    {
+      "protocol": "freedom"
+    }
+  ],
+  "stats": {},
   "policy": {
     "levels": {
       "0": {
@@ -163,21 +159,25 @@ cat <<EOF >${xray_conf_path}y_policy.json
       "statsOutboundUplink": true,
       "statsOutboundDownlink": true
     }
+  },
+  "api": {
+    "tag": "api",
+    "services": [
+      "StatsService"
+    ]
+  },
+  "routing": {
+    "rules": [
+      {
+        "inboundTag": [
+          "api"
+        ],
+        "outboundTag": "api",
+        "type": "field"
+      }
+    ],
+    "domainStrategy": "AsIs"
   }
-}
-EOF
-
-cat <<EOF >${xray_conf_path}z_direct_outbound.json
-{ 
-  "outbounds": [
-    {
-      "protocol": "freedom",
-      "settings": {
-        "domainStrategy": "UseIP"
-      },
-      "tag": "api"
-    }
-  ]
 }
 EOF
 
