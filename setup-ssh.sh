@@ -7,6 +7,10 @@ api_url={apiUrl}
 
 sudo apt-get install -y build-essential libpam0g-dev libcurl4-openssl-dev cmake
 
+if! getent group rocketSSH >/dev/null; then
+  sudo groupadd rocketSSH
+fi
+
 # Function to install BadVPN using a script
 setup_udpgw_service() {
    
