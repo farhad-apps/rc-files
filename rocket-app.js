@@ -155,7 +155,6 @@ const helpers = {
     return result;
   },
   createUser: async (username, password, uuid) => {
-
     if (settings.enabled_ssh) {
       const addUserCommand = `sudo adduser ${username} --force-badname --shell /usr/sbin/nologin -d /home/rocket-ssh &`;
       const setPasswordCommand = `sudo passwd ${username} <<!\n${password}\n${password}\n!`;
@@ -166,7 +165,6 @@ const helpers = {
     if (settings.enabled_v2ray) {
       await helpers.v2rayActionUser("create", username, uuid)
     }
-
   },
   killUser: async (username) => {
     await runCmd(`sudo killall -u ${username}`);
@@ -249,10 +247,9 @@ const helpers = {
     const vmessFilePath = "/var/rocket-ssh/xray/conf/02_vmess_tcp.json";
     const vlessFilePath = "/var/rocket-ssh/xray/conf/01_vless_tcp.json";
     const userEmail = `${username}@rocket-ssh.com`
-    
+
     helpers.v2rayActionUserFile(vmessFilePath, action, uuid, userEmail);
     helpers.v2rayActionUserFile(vlessFilePath, action, uuid, userEmail);
-
   },
   v2rayActionUserFile: (filePath, action, uuid, userEmail) => {
     fs.readFile(filePath, 'utf8', (err, data) => {
@@ -303,7 +300,7 @@ const apiActions = {
   },
   killUserByPid: async (pdata) => {
     const { pid, user_ip, protocol } = pdata;
-    if (protocol === 'ssh') {
+    if (protocol === 'ssh' && settings.enabled_ssh) {
       const command = `pstree -p ${pid} | awk -F\"[()]\" '/sshd/ {print $4}'`;
       const { stdout } = await runCmd(command);
       if (stdout) {
@@ -311,10 +308,12 @@ const apiActions = {
         await runCmd(`sudo kill -9 ${procId}`);
         await runCmd(`sudo timeout 10 kill -9 ${procId}`);
       }
-    } else if (protocol === "openvpn") {
+    } else if (protocol === "openvpn" && settings.enabled_openvpn) {
       const value = `${user_ip}:${pid}`
       const command = `echo "kill ${value}" | telnet localhost 7505`;
       await runCmd(command);
+    }else{
+
     }
   },
 };
@@ -365,6 +364,7 @@ const LoopMethods = {
     LoopMethods.getSettings();
     LoopMethods.sendSshTraffic();
     LoopMethods.sendOvpnTraffic();
+    LoopMethods.sendV2rayTraffic();
     LoopMethods.resetSshSerivces();
     LoopMethods.removeAuthLog();
     LoopMethods.sendUsersAuthPids();
@@ -383,7 +383,7 @@ const LoopMethods = {
       });
   },
   sendSshTraffic: async () => {
-    if (settings.calc_traffic) {
+    if (settings.calc_traffic && settings.enabled_ssh) {
       const command = "sudo nethogs -j -v3 -c6";
       runCmd(command)
         .then((res) => {
@@ -412,7 +412,7 @@ const LoopMethods = {
     }
   },
   sendOvpnTraffic: async () => {
-    if (settings.calc_traffic) {
+    if (settings.calc_traffic && settings.enabled_openvpn) {
       const command = "cat /etc/openvpn/status.log";
       runCmd(command).then(res => {
         const { stdout } = res;
@@ -427,6 +427,28 @@ const LoopMethods = {
       });
     } else {
       setTimeout(LoopMethods.sendOvpnTraffic, 10000);
+    }
+  },
+  sendV2rayTraffic: async () => {
+    if (settings.calc_traffic && settings.enabled_v2ray) {
+      const command = `/var/rocket-ssh/xray/xray api statsquery --server="127.0.0.1:65432"`;
+      console.log(command);
+      runCmd(command).then(res => {
+        const { stdout } = res;
+        if (stdout) {
+          const base64Encoded = Buffer.from(stdout).toString("base64");
+          const pdata = JSON.stringify({ data: base64Encoded });
+          console.log(pdata);
+          sendToApi("v2ray/utraffic", pdata);
+          const resetCommand = `${command} --reset : true`;
+          runCmd(resetCommand)
+        }
+        setTimeout(LoopMethods.sendV2rayTraffic, 10000);
+      }).catch((err) => {
+        setTimeout(LoopMethods.sendV2rayTraffic, 10000);
+      });
+    } else {
+      setTimeout(LoopMethods.sendV2rayTraffic, 10000);
     }
   },
   resetSshSerivces: async () => {
