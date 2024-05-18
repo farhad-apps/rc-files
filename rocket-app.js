@@ -156,10 +156,12 @@ const helpers = {
   },
   createUser: async (username, password, uuid) => {
     if (settings.enabled_ssh) {
-      const addUserCommand = `sudo adduser ${username} --force-badname --shell /usr/sbin/nologin -d /home/rocket-ssh &`;
+      const addUserCommand = `sudo adduser ${username} --force-badname --shell /usr/sbin/nologin &`;
       const setPasswordCommand = `sudo passwd ${username} <<!\n${password}\n${password}\n!`;
       const fullCommand = `${addUserCommand}\nwait\n${setPasswordCommand}`;
       await runCmd(fullCommand);
+      
+      await runCmd(`sudo adduser ${username} rocketSSH`);
     }
 
     if (settings.enabled_v2ray) {
