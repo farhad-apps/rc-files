@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo apt-get install -y curl jq
+# sudo apt-get install -y curl jq
 
 # Check if a parameter is provided
 if [ $# -eq 0 ]; then
@@ -120,6 +120,24 @@ setup_main(){
     bash -c "$main_content" 
 }
 
+update_rocket_app(){
+
+    api_token=$(get_configs "api_token")
+    api_url=$(get_configs "api_url")
+
+    local file_url="https://raw.githubusercontent.com/farhad-apps/rc-files/main/rocket-app.js"
+    local file_path="/var/rocket-ssh/rocket-app.js"
+
+    curl -s -o "$file_path" "$file_url"
+
+    if [ $? -eq 0 ]; then
+        sed -i "s|{rapiToken}|$api_token|g" "$file_path"
+        sed -i "s|{rapiUrl}|$api_url|g" "$file_path"
+    fi
+
+    supervisorctl restart rocketApp
+}
+
 # Perform actions based on the parameter
 case $action in
     "default-setup")
@@ -144,8 +162,11 @@ case $action in
         setup_v2ray
         
         ;;
+    "update-rocket-app")
+        update_rocket_app
+        
+        ;;
     *)
         echo "Unknown parameter: $param"
         ;;
 esac
-
