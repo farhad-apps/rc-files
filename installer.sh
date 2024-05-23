@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# sudo apt-get install -y curl jq
+sudo apt-get install -y curl jq
 
 # Check if a parameter is provided
 if [ $# -eq 0 ]; then
