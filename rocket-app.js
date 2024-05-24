@@ -12,6 +12,8 @@ var settings = {
   calc_traffic: 1,
 };
 
+console.log(11)
+
 const runCmd = (command) => {
   return new Promise((resolve, reject) => {
     exec(command, (error, stdout, stderr) => {
