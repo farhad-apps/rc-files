@@ -96,7 +96,6 @@ const helpers = {
 
     //
     const cpuUsage = await helpers.calculateCPUsage();
-    const users = await helpers.getUsersList();
     const usedMemory = totalmem - freemem;
 
     //
@@ -136,7 +135,6 @@ const helpers = {
       cpu: cpuInfo,
       memeory: memeoryInfo,
       hdd: hddInfo,
-      users,
       traffic,
       app_status: appStatus,
       protocols: {
