@@ -3,7 +3,7 @@
 sudo apt-get install -y curl jq
 
 # Check if a parameter is provided
-if [ $1 -eq 0 ]; then
+if [ $# -eq 0 ]; then
     echo "No parameters provided. Please provide a parameter."
     exit 1
 fi
