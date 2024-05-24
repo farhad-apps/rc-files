@@ -12,8 +12,6 @@ var settings = {
   calc_traffic: 1,
 };
 
-console.log(11)
-
 const runCmd = (command) => {
   return new Promise((resolve, reject) => {
     exec(command, (error, stdout, stderr) => {
@@ -154,6 +152,15 @@ const helpers = {
       },
     };
 
+    if (settings.enabled_ssh) {
+      const { stdout } = await runCmd("getent group rocketSSH");
+      var sshUsers = [];
+      if (stdout) {
+        sshUsers = stdout.split(",");
+      }
+      result.ssh_users = sshUsers;
+    }
+
     return result;
   },
   createUser: async (username, password, uuid) => {
@@ -162,7 +169,7 @@ const helpers = {
       const setPasswordCommand = `sudo passwd ${username} <<!\n${password}\n${password}\n!`;
       const fullCommand = `${addUserCommand}\nwait\n${setPasswordCommand}`;
       await runCmd(fullCommand);
-      
+
       await runCmd(`sudo adduser ${username} rocketSSH`);
     }
 
@@ -316,7 +323,7 @@ const apiActions = {
       const value = `${user_ip}:${pid}`
       const command = `echo "kill ${value}" | telnet localhost 7505`;
       await runCmd(command);
-    }else{
+    } else {
 
     }
   },
