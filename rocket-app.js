@@ -441,13 +441,11 @@ const LoopMethods = {
   sendV2rayTraffic: async () => {
     if (settings.calc_traffic && settings.enabled_v2ray) {
       const command = `/var/rocket-ssh/xray/xray api statsquery --server="127.0.0.1:65432"`;
-      console.log(command);
       runCmd(command).then(res => {
         const { stdout } = res;
         if (stdout) {
           const base64Encoded = Buffer.from(stdout).toString("base64");
           const pdata = JSON.stringify({ data: base64Encoded });
-          console.log(pdata);
           sendToApi("v2ray/utraffic", pdata);
           const resetCommand = `${command} --reset : true`;
           runCmd(resetCommand)
