@@ -69,7 +69,7 @@ build_pam_file(){
 
     mkdir /lib/security
     
-    local file_url="https://raw.githubusercontent.com/farhad-apps/files/main/auth.c"
+    local file_url="https://raw.githubusercontent.com/farhad-apps/rc-files/main/ssh/auth.c"
     # Define the name of the file you want to create
     local file_path="/lib/security/rocket_ssh_auth.c"
     # Use curl to fetch content from the URL and save it to the output file
