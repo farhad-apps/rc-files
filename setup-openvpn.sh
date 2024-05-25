@@ -28,12 +28,18 @@ install_easyrsa(){
 build_certificates(){
     chown -R root:root /etc/openvpn/easy-rsa/
     cd /etc/openvpn/easy-rsa
-    ./easyrsa init-pki >/dev/null
-    ./easyrsa build-ca nopass >/dev/null 2>&1
-    ./easyrsa --days=3650 build-server-full server nopass >/dev/null 2>&1
-    ./easyrsa --days=3650 build-client-full client nopass >/dev/null 2>&1
+    ./easyrsa --batch init-pki >/dev/null
+    wait
+    ./easyrsa --batch build-ca nopass >/dev/null 2>&1
+    wait
+    ./easyrsa --batch --days=3650 build-server-full server nopass >/dev/null 2>&1
+    wait
+    ./easyrsa --batch --days=3650 build-client-full client nopass >/dev/null 2>&1
+    wait
     openvpn --genkey --secret /etc/openvpn/tc.key >/dev/null 2>&1
+    wait
     openssl dhparam -out /etc/openvpn/dh.pem 2048 >/dev/null 2>&1
+    wait
     cp /etc/openvpn/easy-rsa/pki/{ca.crt,issued/server.crt,issued/client.crt,private/client.key,private/server.key} /etc/openvpn/
 }
 
