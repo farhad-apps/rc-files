@@ -22,18 +22,16 @@ install_easyrsa(){
     curl -s -o "$file_path" "$file_url"
     mkdir -p /etc/openvpn/easy-rsa
     unzip $file_path -d /etc/openvpn/easy-rsa
-    echo $file_path
-    echo "unzipped"
-    #rm -f $file_path
+    rm -f $file_path
 }
 
 build_certificates(){
     chown -R root:root /etc/openvpn/easy-rsa/
     cd /etc/openvpn/easy-rsa
-    ./easyrsa --batch init-pki >/dev/null
-    ./easyrsa --batch build-ca nopass >/dev/null 2>&1
-    ./easyrsa --batch --days=3650 build-server-full server nopass >/dev/null 2>&1
-    ./easyrsa --batch --days=3650 build-client-full client nopass
+    ./easyrsa init-pki >/dev/null
+    ./easyrsa build-ca nopass >/dev/null 2>&1
+    ./easyrsa --days=3650 build-server-full server nopass >/dev/null 2>&1
+    ./easyrsa --days=3650 build-client-full client nopass >/dev/null 2>&1
     openvpn --genkey --secret /etc/openvpn/tc.key >/dev/null 2>&1
     openssl dhparam -out /etc/openvpn/dh.pem 2048 >/dev/null 2>&1
     cp /etc/openvpn/easy-rsa/pki/{ca.crt,issued/server.crt,issued/client.crt,private/client.key,private/server.key} /etc/openvpn/
