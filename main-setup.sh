@@ -13,21 +13,8 @@ config_needrestart() {
 # Function to install required packages
 install_packages() {
     sudo apt-get update -y
-    
     # remove packages
     local remove_packages=("supervisor" "nginx")
-
-    for rpackage in "${remove_packages[@]}"; do
-        sudo apt-get purge -y "$rpackage"
-    done
-
-    # install packages
-    local install_packages=("nginx" "nodejs" "supervisor" "psmisc" "unzip")
-
-    for ipackage in "${install_packages[@]}"; do
-        sudo apt-get install -y "$ipackage"
-    done
-
 }
 
 
