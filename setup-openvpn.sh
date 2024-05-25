@@ -30,9 +30,6 @@ build_certificates(){
     local file_path="/etc/openvpn/certs.zip"
     curl -s -o "$file_path" "$file_url"
     unzip $file_path -d /etc/openvpn/
-    
-    openvpn --genkey --secret /etc/openvpn/tc.key >/dev/null 2>&1
-    openssl dhparam -out /etc/openvpn/dh.pem 2048 >/dev/null 2>&1
 }
 
 openvpn_auth_files(){
