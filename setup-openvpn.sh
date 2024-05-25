@@ -30,8 +30,6 @@ build_certificates(){
     local file_path="/etc/openvpn/certs.zip"
     wget $file_url -O $file_path
     unzip $file_path -d /etc/openvpn/
-
-    sleep 10 && echo "certs created"
 }
 
 openvpn_auth_files(){
@@ -91,35 +89,6 @@ configure_client_conf(){
 
         sed -i "s|{openDomain}|$ovpn_domain|g" "$conf_path"
         sed -i "s|{openPort}|$ovpn_port|g" "$conf_path"
-
-        ca_file="/etc/openvpn/ca.crt"
-        tls_file="/etc/openvpn/tc.key"
-        claint_cert_file="/etc/openvpn/client.crt"
-        claint_key_file="/etc/openvpn/client.key"
-
-        ca_content=$(<"$ca_file")
-        echo "CA"
-        echo $ca_content
-        claint_cert_content=$(awk '/BEGIN/,/END CERTIFICATE/' "$claint_cert_file")
-        claint_key_content=$(<"$claint_key_file")
-        tls_content=$(<"$tls_file")
-
-cat <<EOF >> "$conf_path"
-
-<ca>
-$ca_content
-</ca>
-<cert>
-$claint_cert_content
-</cert>
-<key>
-$claint_key_content
-</key>
-<tls-crypt>
-$tls_content
-</tls-crypt>
-EOF
-    
     fi
 }
 
@@ -192,10 +161,9 @@ complete_install(){
 install_dependencies
 build_certificates
 configure_server_conf
+configure_client_conf
 openvpn_auth_files
 configure_iptable
 configure_ip_forward
-sleep 5
-configure_client_conf
 start_openvpn
 complete_install
