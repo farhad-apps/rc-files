@@ -26,7 +26,7 @@ install_easyrsa(){
 }
 
 build_certificates(){
-
+    cd /etc/openvpn/easy-rsa
     /etc/openvpn/easy-rsa/easyrsa --batch init-pki >/dev/null 2>&1
     /etc/openvpn/easy-rsa/easyrsa --batch build-ca nopass >/dev/null 2>&1
     /etc/openvpn/easy-rsa/easyrsa --batch --days=3650 build-server-full server nopass >/dev/null 2>&1
