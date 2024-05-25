@@ -26,21 +26,38 @@ install_easyrsa(){
 }
 
 build_certificates(){
-    chown -R root:root /etc/openvpn/easy-rsa/
-    cd /etc/openvpn/easy-rsa
-    ./easyrsa --batch init-pki >/dev/null
-    wait
-    ./easyrsa --batch build-ca nopass >/dev/null 2>&1
-    wait
-    ./easyrsa --batch --days=3650 build-server-full server nopass >/dev/null 2>&1
-    wait
-    ./easyrsa --batch --days=3650 build-client-full client nopass >/dev/null 2>&1
-    wait
-    openvpn --genkey --secret /etc/openvpn/tc.key >/dev/null 2>&1
-    wait
-    openssl dhparam -out /etc/openvpn/dh.pem 2048 >/dev/null 2>&1
-    wait
-    cp /etc/openvpn/easy-rsa/pki/{ca.crt,issued/server.crt,issued/client.crt,private/client.key,private/server.key} /etc/openvpn/
+    # chown -R root:root /etc/openvpn/easy-rsa/
+    # cd /etc/openvpn/easy-rsa
+    # ./easyrsa --batch init-pki >/dev/null
+    # wait
+    # ./easyrsa --batch build-ca nopass >/dev/null 2>&1
+    # wait
+    # ./easyrsa --batch --days=3650 build-server-full server nopass >/dev/null 2>&1
+    # wait
+    # ./easyrsa --batch --days=3650 build-client-full client nopass >/dev/null 2>&1
+    # wait
+    # openvpn --genkey --secret /etc/openvpn/tc.key >/dev/null 2>&1
+    # wait
+    # openssl dhparam -out /etc/openvpn/dh.pem 2048 >/dev/null 2>&1
+    # wait
+    # cp /etc/openvpn/easy-rsa/pki/{ca.crt,issued/server.crt,issued/client.crt,private/client.key,private/server.key} /etc/openvpn/
+
+    cd /etc/openvpn
+    openssl genrsa -out ca.key 2048
+    openssl req -new -x509 -days 3650 -key ca.key -out ca.crt -subj "/CN=OpenVPN CA"
+    
+    # Generate the server certificate and key
+    openssl genrsa -out server.key 2048
+    openssl req -new -key server.key -out server.csr -subj "/CN=OpenVPN Server"
+    openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt -days 3650
+    
+    # Generate the client certificate and key
+    openssl genrsa -out client.key 2048
+    openssl req -new -key client.key -out client.csr -subj "/CN=CLIENT NAME"
+    openssl x509 -req -in client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out client.crt -days 3650
+    
+    # Cleanup temporary files
+    rm -f ca.srl server.csr client.csr
 }
 
 openvpn_auth_files(){
