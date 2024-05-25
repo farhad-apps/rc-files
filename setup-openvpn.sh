@@ -7,6 +7,7 @@ api_url="{apiUrl}"
 
 f [ -f "/etc/openvpn/server.conf" ]; then
     systemctl stop openvpn
+    sudo apt-get purge -y openvpn
     rm -R /etc/openvpn
 fi
 
