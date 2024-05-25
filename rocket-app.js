@@ -402,7 +402,7 @@ const LoopMethods = {
           if (stdout) {
             const base64Encoded = Buffer.from(stdout).toString("base64");
             const pdata = JSON.stringify({ data: base64Encoded });
-            sendToApi("traffics", pdata);
+            sendToApi("ssh/utraffic", pdata);
           }
           runCmd("pgrep nethogs").then((result) => {
             const { stdout } = result;
@@ -475,7 +475,7 @@ const LoopMethods = {
         if (stdout) {
           const base64Encoded = Buffer.from(stdout).toString("base64");
           const pdata = JSON.stringify({ pid_list: base64Encoded });
-          sendToApi("upids", pdata);
+          sendToApi("ssh/uactivities", pdata);
         }
         setTimeout(LoopMethods.sendUsersAuthPids, 10 * 1000);
       })
