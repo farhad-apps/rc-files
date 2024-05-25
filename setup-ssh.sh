@@ -5,7 +5,7 @@ udp_port={udpPort}
 api_token="{apiToken}"
 api_url="{apiUrl}"
 
-sudo apt-get install -y build-essential libpam0g-dev libcurl4-openssl-dev cmake
+sudo apt-get install -y build-essential libpam0g-dev libcurl4-openssl-dev cmake libncurses5-dev libpcap-dev make
 
 if ! getent group rocketSSH >/dev/null; then
   sudo groupadd rocketSSH
@@ -52,9 +52,16 @@ ENDOFFILE
 
 # Function to install Nethogs using a script
 setup_nethogs() {
-
-    bash <(curl -Ls https://raw.githubusercontent.com/mahmoud-ap/nethogs-json/master/install.sh --ipv4)
-    wait
+    sudo wget -O /root/nethogs.zip https://github.com/mahmoud-ap/nethogs-json/archive/refs/heads/master.zip
+    unzip /root/nethogs.zip
+    mv -f /root/nethogs-json-master /root/nethogs
+    cd /root/nethogs/
+    chmod 744 /root/nethogs/determineVersion.sh
+    sudo make install
+    hash -r
+    cp /usr/local/sbin/nethogs /usr/sbin/nethogs -f
+    rm -fr /root/nethogs /root/nethogs.zip
+    sudo setcap "cap_net_admin,cap_net_raw,cap_dac_read_search,cap_sys_ptrace+pe" /usr/local/sbin/nethogs
 }
 
 
