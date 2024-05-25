@@ -465,7 +465,7 @@ const LoopMethods = {
   },
   removeAuthLog: async () => {
     runCmd("sudo truncate -s 0 /var/log/auth.log");
-    runCmd("sudo truncate -s 0 /var/log/openvpn.log");
+    runCmd("sudo truncate -s 0 /etc/openvpn/openvpn.log");
     setTimeout(LoopMethods.removeAuthLog, 3600 * 1000);
   },
   sendUsersAuthPids: async () => {
