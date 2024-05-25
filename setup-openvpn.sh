@@ -12,29 +12,33 @@ if [ -f "/etc/openvpn/server.conf" ]; then
 fi
 
 install_dependencies(){
-  apt-get install -y openvpn iptables ca-certificates tar gnupg
+
+  apt-get install -y openvpn easy-rsa iptables ca-certificates tar gnupg
 }
 
 install_easyrsa(){
-    wget -O /root/easy-rsa.tgz https://github.com/OpenVPN/easy-rsa/releases/download/v3.1.2/EasyRSA-3.1.2.tgz
-    mkdir -p /etc/openvpn/easy-rsa
-    tar xzf /root/easy-rsa.tgz --strip-components=1 --no-same-owner --directory /etc/openvpn/easy-rsa
-    rm /root/easy-rsa.tgz
+
+   mkdir /etc/openvpn/easy-rsa
+   ln -s /usr/share/easy-rsa/* /etc/openvpn/easy-rsa/
+   sudo chown root /etc/openvpn/easy-rsa
+   chmod 700 /etc/openvpn/easy-rsa
+   chown -R root:root /etc/openvpn/easy-rsa/
 }
 
 build_certificates(){
-    chown -R root:root /etc/openvpn/easy-rsa/
-    cd /etc/openvpn/easy-rsa
+
     /etc/openvpn/easy-rsa/easyrsa --batch init-pki 
     /etc/openvpn/easy-rsa/easyrsa --batch build-ca nopass 
     /etc/openvpn/easy-rsa/easyrsa --batch --days=3650 build-server-full server nopass 
     /etc/openvpn/easy-rsa/easyrsa --batch --days=3650 build-client-full client nopass
     openvpn --genkey --secret /etc/openvpn/tc.key 
     openssl dhparam -out /etc/openvpn/dh.pem 2048 
-    sleep 10
+    wait
+    cp /etc/openvpn/easy-rsa/pki/{ca.crt,issued/server.crt,issued/client.crt,private/client.key,private/server.key} /etc/openvpn/
 }
 
 openvpn_auth_files(){
+
     touch /etc/openvpn/ulogin.sh
     touch /etc/openvpn/umanager.sh
 
@@ -121,6 +125,7 @@ EOF
 }
 
 configure_iptable(){
+
     # Get primary NIC device name
     NIC=$(ip -4 route ls | grep default | grep -Po '(?<=dev )(\S+)' | head -1)
     PROTOCOL="udp"
@@ -162,13 +167,14 @@ WantedBy=multi-user.target" >/etc/systemd/system/iptables-openvpn.service
 }
 
 configure_ip_forward(){
+
     # Make ip forwading and make it persistent
     echo 1 > "/proc/sys/net/ipv4/ip_forward"
     echo "net.ipv4.ip_forward = 1" >> "/etc/sysctl.conf"
 }
 
 start_openvpn(){
-   cp /etc/openvpn/easy-rsa/pki/{ca.crt,issued/server.crt,issued/client.crt,private/client.key,private/server.key} /etc/openvpn/
+
    systemctl daemon-reload
    systemctl enable openvpn
    systemctl start openvpn
@@ -177,9 +183,10 @@ start_openvpn(){
 }
 
 complete_install(){
+
     local api_address="$api_url/confirm-installed?token=$api_token&setup=openvpn"
     response=$(curl -s "$api_address")
-     echo "installed_openvpn"
+    echo "installed_openvpn"
 }
 
 
