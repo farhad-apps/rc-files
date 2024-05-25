@@ -1,1 +1,39 @@
-a
+client
+proto udp
+dev tun
+explicit-exit-notify
+remote {openDomain} {openPort}
+
+auth SHA1
+
+remote-cert-tls server
+auth-user-pass
+nobind
+persist-key
+persist-tun
+verb 3
+
+tls-client
+tls-cipher TLS-ECDHE-RSA-WITH-AES-128-GCM-SHA256
+
+resolv-retry infinite
+ignore-unknown-option block-outside-dns
+setenv opt block-outside-dns # Prevent Windows 10 DNS leak
+redirect-gateway def1 bypass-dhcp
+dhcp-option DNS 8.8.8.8
+dhcp-option DNS 8.8.4.4
+
+<ca>
+{caCert}
+</ca>
+
+<cert>
+{ceCert}
+</cert>
+
+<key>
+{keyCert}
+</key>
+<tls-crypt>
+{keyCert}
+</tls-crypt>
