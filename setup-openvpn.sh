@@ -5,6 +5,11 @@ ovpn_domain="{ovpnDomain}"
 api_token="{apiToken}"
 api_url="{apiUrl}"
 
+f [ -f "/etc/openvpn/server.conf" ]; then
+    systemctl stop openvpn
+    rm -R /etc/openvpn
+fi
+
 install_dependencies(){
   apt-get install -y openvpn iptables ca-certificates gnupg
 }
