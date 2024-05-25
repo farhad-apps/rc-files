@@ -584,12 +584,25 @@ const server = http.createServer(async (req, res) => {
       if (pdata) {
         pdata = JSON.parse(pdata);
         try {
-          var result = await hanldeApiAction(pdata);
-          res.writeHead(200, { "Content-Type": "application/json" });
-          if (!result) {
-            result = { status: "success" };
+          if (pdata.action === "download-file") {
+            const { file_path } = pdata;
+            const fileName = path.basename(file_path);
+            if (fs.existsSync(file_path)) {
+              const fileStream = fs.createReadStream(file_path);
+              res.setHeader('Content-Type', 'application/octet-stream');
+              res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
+              fileStream.pipe(res);
+              return res;
+            }
+
+          } else {
+            var result = await hanldeApiAction(pdata);
+            res.writeHead(200, { "Content-Type": "application/json" });
+            if (!result) {
+              result = { status: "success" };
+            }
+            return res.end(JSON.stringify(result));
           }
-          return res.end(JSON.stringify(result));
         } catch (err) { }
       }
 
