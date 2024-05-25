@@ -5,7 +5,7 @@ ovpn_domain="{ovpnDomain}"
 api_token="{apiToken}"
 api_url="{apiUrl}"
 
-if [ -f "/etc/openvpn/server.conf" ]; then
+if [ -d /etc/openvpn ]; then
     systemctl stop openvpn
     sudo apt-get purge -y openvpn
     rm -R /etc/openvpn
