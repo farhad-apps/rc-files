@@ -4,6 +4,7 @@ const os = require("os");
 const fs = require("fs");
 const process = require("process");
 const { Buffer } = require("buffer");
+const path = require('path');
 
 const API_URL = "{rapiUrl}";
 const API_TOKEN = "{rapiToken}";
@@ -603,7 +604,9 @@ const server = http.createServer(async (req, res) => {
             }
             return res.end(JSON.stringify(result));
           }
-        } catch (err) { }
+        } catch (err) {
+          console.log("error,err)
+        }
       }
 
       res.writeHead(200, { "Content-Type": "application/json" });
