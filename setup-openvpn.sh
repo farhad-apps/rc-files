@@ -147,7 +147,7 @@ get_client_generator(){
 
     # Use curl to fetch content from the URL and save it to the output file
     curl -s -o "$conf_path" "$conf_url"
-
+    chmod +x $conf_path
 }
 
 start_openvpn(){
@@ -175,4 +175,5 @@ openvpn_auth_files
 configure_iptable
 configure_ip_forward
 start_openvpn
+get_client_generator
 complete_install
