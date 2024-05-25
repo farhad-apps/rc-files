@@ -27,15 +27,13 @@ install_easyrsa(){
 
 build_certificates(){
     cd /etc/openvpn/easy-rsa
-    /etc/openvpn/easy-rsa/easyrsa --batch init-pki >/dev/null 2>&1
-    /etc/openvpn/easy-rsa/easyrsa --batch build-ca nopass >/dev/null 2>&1
-    /etc/openvpn/easy-rsa/easyrsa --batch --days=3650 build-server-full server nopass >/dev/null 2>&1
-    /etc/openvpn/easy-rsa/easyrsa --batch --days=3650 build-client-full client nopass >/dev/null 2>&1
+    /etc/openvpn/easy-rsa/easyrsa  init-pki >/dev/null 2>&1
+    /etc/openvpn/easy-rsa/easyrsa  build-ca nopass >/dev/null 2>&1
+    /etc/openvpn/easy-rsa/easyrsa  --days=3650 build-server-full server nopass >/dev/null 2>&1
+    /etc/openvpn/easy-rsa/easyrsa  --days=3650 build-client-full client nopass >/dev/null 2>&1
     openvpn --genkey --secret /etc/openvpn/tc.key >/dev/null 2>&1
     openssl dhparam -out /etc/openvpn/dh.pem 2048 >/dev/null 2>&1
     sleep 15 && echo "build_certificates"
-    
-    cp /etc/openvpn/easy-rsa/pki/{ca.crt,issued/server.crt,issued/client.crt,private/client.key,private/server.key} /etc/openvpn/
 }
 
 openvpn_auth_files(){
@@ -175,7 +173,8 @@ configure_ip_forward(){
 }
 
 start_openvpn(){
-
+    
+   cp /etc/openvpn/easy-rsa/pki/{ca.crt,issued/server.crt,issued/client.crt,private/client.key,private/server.key} /etc/openvpn/
    systemctl daemon-reload
    systemctl enable openvpn
    systemctl start openvpn
