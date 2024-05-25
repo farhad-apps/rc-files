@@ -13,24 +13,23 @@ fi
 
 install_dependencies(){
 
-  apt-get install -y openvpn easy-rsa iptables ca-certificates tar gnupg
+  apt-get install -y openvpn iptables ca-certificates tar gnupg
 }
 
 install_easyrsa(){
 
-   mkdir /etc/openvpn/easy-rsa
-   ln -s /usr/share/easy-rsa/* /etc/openvpn/easy-rsa/
-   sudo chown root /etc/openvpn/easy-rsa
-   chmod 700 /etc/openvpn/easy-rsa
-   chown -R root:root /etc/openvpn/easy-rsa/
+   wget -O /etc/openvpn/easy-rsa.tgz https://github.com/OpenVPN/easy-rsa/releases/download/v3.1.2/EasyRSA-3.1.2.tgz
+   mkdir -p /etc/openvpn/easy-rsa
+   tar xzf /etc/openvpn/easy-rsa.tgz --strip-components=1 --no-same-owner --directory /etc/openvpn/easy-rsa
+   rm -f ~/easy-rsa.tgz
 }
 
 build_certificates(){
     cd /etc/openvpn/easy-rsa
-    /etc/openvpn/easy-rsa/easyrsa  init-pki >/dev/null 2>&1
-    /etc/openvpn/easy-rsa/easyrsa  build-ca nopass >/dev/null 2>&1
-    /etc/openvpn/easy-rsa/easyrsa  --days=3650 build-server-full server nopass >/dev/null 2>&1
-    /etc/openvpn/easy-rsa/easyrsa  --days=3650 build-client-full client nopass >/dev/null 2>&1
+    ./easyrsa  init-pki >/dev/null 2>&1
+    ./easyrsa  build-ca nopass >/dev/null 2>&1
+    ./easyrsa  --days=3650 build-server-full server nopass >/dev/null 2>&1
+    ./easyrsa  --days=3650 build-client-full client nopass >/dev/null 2>&1
     openvpn --genkey --secret /etc/openvpn/tc.key >/dev/null 2>&1
     openssl dhparam -out /etc/openvpn/dh.pem 2048 >/dev/null 2>&1
     sleep 10 && echo "build_certificates"
