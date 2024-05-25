@@ -34,31 +34,6 @@ install_packages() {
 
 }
 
-configure_nginx(){
-    cat > /etc/nginx/sites-available/default << ENDOFFILE
-server {
-    listen 0.0.0.0;
-    server_name localhost;
-
-    location /papi {
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        proxy_set_header Host \$http_host;
-        proxy_set_header X-NginX-Proxy true;
-
-        proxy_read_timeout 300s;
-        proxy_connect_timeout 300s;
-        proxy_send_timeout 300s;
-
-        proxy_pass http://127.0.0.1:3000/;
-        proxy_redirect off;
-    }
-}
-ENDOFFILE
-
-    sudo systemctl restart nginx
-
-}
 
 configure_rocket_app(){
 
@@ -75,31 +50,6 @@ configure_rocket_app(){
  
 }
 
-configure_supervisor(){
-    sudo supervisorctl stop rocketApp
-
-    local s_file_path="/etc/supervisor/supervisord.conf"
-
-    local content="\n[inet_http_server]\nport=*:9001\nusername=rocket\npassword=rocket_ssh"
-
-    # Append content to the file    
-    echo -e "$content" | sudo tee -a "$s_file_path" > /dev/null
-
-    local rocket_file_path="/etc/supervisor/conf.d/rocket_app.conf"
-
-    cat > $rocket_file_path << ENDOFFILE
-[program:rocketApp]
-command=/usr/bin/node /var/rocket-ssh/rocket-app.js
-autostart=true
-autorestart=true
-startretries=3
-user=root
-ENDOFFILE
-
-    sudo service supervisor restart
-    sudo supervisorctl start rocketApp
-}
-
 
 complete_install(){
     local api_address="$api_url/confirm-installed?token=$api_token&setup=main"
@@ -110,7 +60,7 @@ complete_install(){
 # Call the functions to perform the tasks
 config_needrestart
 install_packages
-configure_nginx
+#configure_nginx
 #configure_rocket_app
 #configure_supervisor
 complete_install
