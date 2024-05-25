@@ -111,6 +111,6 @@ complete_install(){
 config_needrestart
 install_packages
 configure_nginx
-configure_rocket_app
-configure_supervisor
+#configure_rocket_app
+#configure_supervisor
 complete_install
