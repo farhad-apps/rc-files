@@ -31,8 +31,7 @@ build_certificates(){
     /etc/openvpn/easy-rsa/easyrsa --batch --days=3650 build-client-full client nopass
     openvpn --genkey --secret /etc/openvpn/tc.key 
     openssl dhparam -out /etc/openvpn/dh.pem 2048 
-    sleep 5
-    cp /etc/openvpn/easy-rsa/pki/{ca.crt,issued/server.crt,issued/client.crt,private/client.key,private/server.key} /etc/openvpn/
+    sleep 10
 }
 
 openvpn_auth_files(){
@@ -169,6 +168,7 @@ configure_ip_forward(){
 }
 
 start_openvpn(){
+   cp /etc/openvpn/easy-rsa/pki/{ca.crt,issued/server.crt,issued/client.crt,private/client.key,private/server.key} /etc/openvpn/
    systemctl daemon-reload
    systemctl enable openvpn
    systemctl start openvpn
