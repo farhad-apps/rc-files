@@ -7,10 +7,6 @@ api_url="{apiUrl}"
 
 config_needrestart() {
     local nrconf_file="/etc/needrestart/needrestart.conf"
-    
-    if [ -e "$nrconf_file" ]; then
-        echo '$nrconf{restart} = "a";' >> "$nrconf_file"
-    fi
 
 }
 
