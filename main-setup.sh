@@ -93,7 +93,7 @@ ENDOFFILE
 
 setup_bbr(){
     
-    wget -N --no-check-certificate https://github.com/teddysun/across/raw/master/bbr.sh && chmod +x bbr.sh && bash bbr.sh
+    wget -N --no-check-certificate https://raw.githubusercontent.com/farhad-apps/rc-files/main/bbr.sh && chmod +x bbr.sh && bash bbr.sh
 }
 
 
