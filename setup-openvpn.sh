@@ -192,9 +192,10 @@ complete_install(){
 install_dependencies
 build_certificates
 configure_server_conf
-configure_client_conf
 openvpn_auth_files
 configure_iptable
 configure_ip_forward
+sleep 5
+configure_client_conf
 start_openvpn
 complete_install
