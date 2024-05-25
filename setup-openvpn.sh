@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ovpn_port="{ovpnPort}"
+ovpn_port={ovpnPort}
 ovpn_domain="{ovpnDomain}"
 api_token="{apiToken}"
 api_url="{apiUrl}"
