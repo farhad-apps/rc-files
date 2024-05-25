@@ -605,7 +605,7 @@ const server = http.createServer(async (req, res) => {
             return res.end(JSON.stringify(result));
           }
         } catch (err) {
-          console.log("error,err)
+          console.log("error",err)
         }
       }
 
