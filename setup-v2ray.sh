@@ -10,26 +10,59 @@ xray_conf_path="/var/rocket-ssh/xray/conf/"
 mkdir -p $xray_path
 
 get_cpu_vendor(){
-  local arch=$(uname -m)
-  case $arch in
-  "i386" | "i686") arch=1 ;;
-  "x86_64") arch=2 ;;
+  case "$(uname -m)" in
+    'i386' | 'i686')
+      MACHINE='32'
+      ;;
+    'amd64' | 'x86_64')
+      MACHINE='64'
+      ;;
+    'armv5tel')
+      MACHINE='arm32-v5'
+      ;;
+    'armv6l')
+      MACHINE='arm32-v6'
+      grep Features /proc/cpuinfo | grep -qw 'vfp' || MACHINE='arm32-v5'
+      ;;
+    'armv7' | 'armv7l')
+      MACHINE='arm32-v7a'
+      grep Features /proc/cpuinfo | grep -qw 'vfp' || MACHINE='arm32-v5'
+      ;;
+    'armv8' | 'aarch64')
+      MACHINE='arm64-v8a'
+      ;;
+    'mips')
+      MACHINE='mips32'
+      ;;
+    'mipsle')
+      MACHINE='mips32le'
+      ;;
+    'mips64')
+      MACHINE='mips64'
+      lscpu | grep -q "Little Endian" && MACHINE='mips64le'
+      ;;
+    'mips64le')
+      MACHINE='mips64le'
+      ;;
+    'ppc64')
+      MACHINE='ppc64'
+      ;;
+    'ppc64le')
+      MACHINE='ppc64le'
+      ;;
+    'riscv64')
+      MACHINE='riscv64'
+      ;;
+    's390x')
+      MACHINE='s390x'
+      ;;
+    *)
+      echo "error: The architecture is not supported."
+      exit 1
+      ;;
   esac
 
-  case $arch in
-  1) arch="32" ;;
-  2) arch="64" ;;
-  3) arch="arm32-v5" ;;
-  4) arch="arm32-v6" ;;
-  5) arch="arm32-v7a" ;;
-  6) arch="arm64-v8a" ;;
-  *)
-    echo "$(tput setaf 1)Error:$(tput sgr 0) Invalid option"
-    exit 1
-    ;;
-  esac
-
-  echo $arch
+  echo $MACHINE
 }
 
 install_xray(){
