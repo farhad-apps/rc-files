@@ -17,10 +17,11 @@ install_dependencies(){
 }
 
 install_easyrsa(){
-
-    wget -O /root/easy-rsa.tgz https://github.com/mahmoud-ap/EasyRSA/raw/main/EasyRSA-3.1.2.tgz
+    local file_url="https://github.com/mahmoud-ap/EasyRSA/raw/main/EasyRSA.zip"
+    local file_path="/root/easy-rsa.tgz"
+    curl -s -o "$file_path" "$file_url"
     mkdir -p /etc/openvpn/easy-rsa
-    tar xzf /root/easy-rsa.tgz --strip-components=1 --no-same-owner --directory /etc/openvpn/easy-rsa
+    unzip /root/easy-rsa.tgz -d /etc/openvpn/easy-rsa
     rm -f /root/easy-rsa.tgz
 }
 
