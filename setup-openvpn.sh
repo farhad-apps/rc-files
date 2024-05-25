@@ -18,10 +18,10 @@ install_dependencies(){
 
 install_easyrsa(){
 
-    wget -O ~/easy-rsa.tgz https://github.com/OpenVPN/easy-rsa/releases/download/v3.1.2/EasyRSA-3.1.2.tgz
+    wget -O /root/easy-rsa.tgz https://github.com/OpenVPN/easy-rsa/releases/download/v3.1.2/EasyRSA-3.1.2.tgz
     mkdir -p /etc/openvpn/easy-rsa
-    tar xzf ~/easy-rsa.tgz --strip-components=1 --no-same-owner --directory /etc/openvpn/easy-rsa
-    rm -f ~/easy-rsa.tgz
+    tar xzf /root/easy-rsa.tgz --strip-components=1 --no-same-owner --directory /etc/openvpn/easy-rsa
+    rm -f /root/easy-rsa.tgz
 }
 
 build_certificates(){
