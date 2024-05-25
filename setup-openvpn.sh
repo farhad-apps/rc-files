@@ -12,15 +12,14 @@ if [ -f "/etc/openvpn/server.conf" ]; then
 fi
 
 install_dependencies(){
-  apt-get install -y openvpn iptables ca-certificates gnupg
+  apt-get install -y openvpn iptables ca-certificates tar gnupg
 }
 
 install_easyrsa(){
     wget -O ~/easy-rsa.tgz https://github.com/OpenVPN/easy-rsa/releases/download/v3.1.2/EasyRSA-3.1.2.tgz
     mkdir -p /etc/openvpn/easy-rsa
     tar xzf ~/easy-rsa.tgz --strip-components=1 --no-same-owner --directory /etc/openvpn/easy-rsa
-    echo "passed"
-    rm -f ~/easy-rsa.tgz
+    echo "tar execute"
 }
 
 build_certificates(){
