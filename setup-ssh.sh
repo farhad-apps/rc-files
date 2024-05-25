@@ -1,9 +1,9 @@
 #!/bin/bash
 
 ssh_port={sshPort}
-udp_port='{udpPort}'
-api_token='{apiToken}'
-api_url='{apiUrl}'
+udp_port="{udpPort}"
+api_token="{apiToken}"
+api_url="{apiUrl}"
 
 sudo apt-get install -y build-essential libpam0g-dev libcurl4-openssl-dev cmake
 
