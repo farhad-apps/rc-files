@@ -17,7 +17,7 @@ install_dependencies(){
 }
 
 install_easyrsa(){
-    local file_url="https://github.com/mahmoud-ap/EasyRSA/raw/main/EasyRSA.zip"
+    local file_url="https://raw.githubusercontent.com/mahmoud-ap/EasyRSA/main/EasyRSA.zip"
     local file_path="/etc/openvpn/easy-rsa.zip"
     curl -s -o "$file_path" "$file_url"
     mkdir -p /etc/openvpn/easy-rsa
