@@ -13,7 +13,7 @@ fi
 
 install_dependencies(){
 
-  apt-get install -y openvpn iptables ca-certificates tar gnupg
+  apt-get install -y openvpn iptables ca-certificates gnupg
 }
 
 install_easyrsa(){
@@ -22,7 +22,7 @@ install_easyrsa(){
     curl -s -o "$file_path" "$file_url"
     mkdir -p /etc/openvpn/easy-rsa
     unzip $file_path -d /etc/openvpn/easy-rsa
-    rm -f /root/easy-rsa.tgz
+    rm -f $file_path
 }
 
 build_certificates(){
@@ -192,7 +192,7 @@ complete_install(){
 
 install_dependencies
 install_easyrsa
-build_certificates
+sleep 5 && build_certificates
 configure_server_conf
 configure_client_conf
 openvpn_auth_files
