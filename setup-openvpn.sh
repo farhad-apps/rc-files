@@ -33,7 +33,8 @@ build_certificates(){
     /etc/openvpn/easy-rsa/easyrsa  --days=3650 build-client-full client nopass >/dev/null 2>&1
     openvpn --genkey --secret /etc/openvpn/tc.key >/dev/null 2>&1
     openssl dhparam -out /etc/openvpn/dh.pem 2048 >/dev/null 2>&1
-    sleep 15 && echo "build_certificates"
+    sleep 10 && echo "build_certificates"
+    ls /etc/openvpn/easy-rsa/pki
 }
 
 openvpn_auth_files(){
