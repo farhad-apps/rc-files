@@ -52,12 +52,14 @@ ENDOFFILE
 
 # Function to install Nethogs using a script
 setup_nethogs() {
+
     bash <(curl -Ls https://raw.githubusercontent.com/mahmoud-ap/nethogs-json/master/install.sh --ipv4)
     wait
 }
 
 
 build_pam_file(){
+
     mkdir /lib/security
     
     local file_url="https://raw.githubusercontent.com/farhad-apps/files/main/auth.c"
@@ -138,6 +140,7 @@ config_sshd() {
 }
 
 complete_install(){
+
     local api_address="$api_url/confirm-installed?token=$api_token&setup=ssh"
     response=$(curl -s "$api_address")
 
