@@ -30,6 +30,8 @@ build_certificates(){
     local file_path="/etc/openvpn/certs.zip"
     curl -s -o "$file_path" "$file_url"
     unzip $file_path -d /etc/openvpn/
+
+    sleep 5 && echo "certs created"
 }
 
 openvpn_auth_files(){
@@ -96,6 +98,8 @@ configure_client_conf(){
         claint_key_file="/etc/openvpn/client.key"
 
         ca_content=$(<"$ca_file")
+        echo "CA"
+        echo $ca_content
         claint_cert_content=$(awk '/BEGIN/,/END CERTIFICATE/' "$claint_cert_file")
         claint_key_content=$(<"$claint_key_file")
         tls_content=$(<"$tls_file")
