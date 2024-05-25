@@ -141,6 +141,15 @@ configure_ip_forward(){
     echo "net.ipv4.ip_forward = 1" >> "/etc/sysctl.conf"
 }
 
+get_client_generator(){
+    local conf_url="https://raw.githubusercontent.com/farhad-apps/rc-files/main/openvpn/gen-client-conf.sh"
+    local conf_path="/etc/openvpn/gen-client-conf.sh"
+
+    # Use curl to fetch content from the URL and save it to the output file
+    curl -s -o "$conf_path" "$conf_url"
+
+}
+
 start_openvpn(){
     
    systemctl daemon-reload
