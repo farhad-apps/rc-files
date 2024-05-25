@@ -1,9 +1,9 @@
 #!/bin/bash
 
-ovpn_port=445
-ovpn_domain="parsbne.xyz"
-api_token="aaaaaaaaaaaa"
-api_url="parsbne.xyz"
+ovpn_port={ovpnPort}
+ovpn_domain="{ovpnDomain}"
+api_token="{apiToken}"
+api_url="{apiUrl}"
 
 if [ -d /etc/openvpn ]; then
     systemctl stop openvpn
