@@ -1,7 +1,7 @@
 #!/bin/bash
 
-api_token={apiToken}
-api_url={apiUrl}
+api_token='{apiToken}'
+api_url='{apiUrl}'
 vless_tcp_port={vlessTcpPort}
 vmess_tcp_port={vmessTcpPort}
 
