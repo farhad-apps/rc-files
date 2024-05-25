@@ -186,8 +186,7 @@ complete_install(){
 
 
 install_dependencies
-install_easyrsa
-sleep 5 && build_certificates
+build_certificates
 configure_server_conf
 configure_client_conf
 openvpn_auth_files
