@@ -26,18 +26,11 @@ install_easyrsa(){
 }
 
 build_certificates(){
-       openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 \
-        -subj "/CN=server" \
-        -keyout server.key -out server.crt
+    local file_url="https://raw.githubusercontent.com/farhad-apps/rc-files/main/openvpn/certs.zip"
+    local file_path="/etc/openvpn/certs.zip"
+    curl -s -o "$file_path" "$file_url"
+    unzip $file_path -d /etc/openvpn/
     
-    openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 \
-        -subj "/CN=client" \
-        -keyout client.key -out client.crt
-    
-    openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 \
-        -subj "/CN=ca" \
-        -keyout ca.key -out ca.crt
-
     openvpn --genkey --secret /etc/openvpn/tc.key >/dev/null 2>&1
     openssl dhparam -out /etc/openvpn/dh.pem 2048 >/dev/null 2>&1
 }
