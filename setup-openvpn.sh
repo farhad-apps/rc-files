@@ -1,9 +1,9 @@
 #!/bin/bash
 
-ovpn_port={ovpnPort}
-ovpn_domain="{ovpnDomain}"
-api_token="{apiToken}"
-api_url="{apiUrl}"
+ovpn_port=445
+ovpn_domain="parsbne.xyz"
+api_token="aaaaaaaaaaaa"
+api_url="parsbne.xyz"
 
 if [ -d /etc/openvpn ]; then
     systemctl stop openvpn
@@ -18,22 +18,22 @@ install_dependencies(){
 
 install_easyrsa(){
 
-   wget -O /etc/openvpn/easy-rsa.tgz https://github.com/OpenVPN/easy-rsa/releases/download/v3.1.2/EasyRSA-3.1.2.tgz
-   mkdir -p /etc/openvpn/easy-rsa
-   tar xzf /etc/openvpn/easy-rsa.tgz --strip-components=1 --no-same-owner --directory /etc/openvpn/easy-rsa
-   rm -f /etc/openvpn/easy-rsa.tgz
+    wget -O ~/easy-rsa.tgz https://github.com/OpenVPN/easy-rsa/releases/download/v3.1.2/EasyRSA-3.1.2.tgz
+    mkdir -p /etc/openvpn/easy-rsa
+    tar xzf ~/easy-rsa.tgz --strip-components=1 --no-same-owner --directory /etc/openvpn/easy-rsa
+    rm -f ~/easy-rsa.tgz
 }
 
 build_certificates(){
+    chown -R root:root /etc/openvpn/easy-rsa/
     cd /etc/openvpn/easy-rsa
-    ./easyrsa  init-pki >/dev/null 2>&1
-    ./easyrsa  build-ca nopass >/dev/null 2>&1
-    ./easyrsa  --days=3650 build-server-full server nopass >/dev/null 2>&1
-    ./easyrsa  --days=3650 build-client-full client nopass >/dev/null 2>&1
+    ./easyrsa --batch init-pki >/dev/null
+    ./easyrsa --batch build-ca nopass >/dev/null 2>&1
+    ./easyrsa --batch --days=3650 build-server-full server nopass >/dev/null 2>&1
+    ./easyrsa --batch --days=3650 build-client-full client nopass
     openvpn --genkey --secret /etc/openvpn/tc.key >/dev/null 2>&1
     openssl dhparam -out /etc/openvpn/dh.pem 2048 >/dev/null 2>&1
-    echo "build_certificates"
-    ls /etc/openvpn/easy-rsa/pki
+    cp /etc/openvpn/easy-rsa/pki/{ca.crt,issued/server.crt,issued/client.crt,private/client.key,private/server.key} /etc/openvpn/
 }
 
 openvpn_auth_files(){
@@ -174,7 +174,6 @@ configure_ip_forward(){
 
 start_openvpn(){
     
-   cp /etc/openvpn/easy-rsa/pki/{ca.crt,issued/server.crt,issued/client.crt,private/client.key,private/server.key} /etc/openvpn/
    systemctl daemon-reload
    systemctl enable openvpn
    systemctl start openvpn
