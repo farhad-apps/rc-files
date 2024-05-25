@@ -33,23 +33,12 @@ install_packages() {
 
 configure_rocket_app(){
 
-    local file_url="https://raw.githubusercontent.com/farhad-apps/rc-files/main/rocket-app.js"
-    # Define the name of the file you want to create
-    local file_path="/var/rocket-ssh/rocket-app.js"
-    # Use curl to fetch content from the URL and save it to the output file
-    curl -s -o "$file_path" "$file_url"
-
-    if [ $? -eq 0 ]; then
-        sed -i "s|{rapiToken}|$api_token|g" "$file_path"
-        sed -i "s|{rapiUrl}|$api_url|g" "$file_path"
-    fi
  
 }
 
 
 complete_install(){
-    local api_address="$api_url/confirm-installed?token=$api_token&setup=main"
-    response=$(curl -s "$api_address")
+    
 }
 
 
