@@ -19,7 +19,7 @@ install_easyrsa(){
     wget -O /root/easy-rsa.tgz https://github.com/OpenVPN/easy-rsa/releases/download/v3.1.2/EasyRSA-3.1.2.tgz
     mkdir -p /etc/openvpn/easy-rsa
     tar xzf /root/easy-rsa.tgz --strip-components=1 --no-same-owner --directory /etc/openvpn/easy-rsa
-    echo "tar execute"
+    rm /root/easy-rsa.tgz
 }
 
 build_certificates(){
@@ -31,6 +31,7 @@ build_certificates(){
     /etc/openvpn/easy-rsa/easyrsa --batch --days=3650 build-client-full client nopass
     openvpn --genkey --secret /etc/openvpn/tc.key >/dev/null 2>&1
     openssl dhparam -out /etc/openvpn/dh.pem 2048 >/dev/null 2>&1
+    sleep 5
     cp /etc/openvpn/easy-rsa/pki/{ca.crt,issued/server.crt,issued/client.crt,private/client.key,private/server.key} /etc/openvpn/
 }
 
