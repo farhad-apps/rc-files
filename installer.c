@@ -58,19 +58,16 @@ void replace_strings(char* script, const char* search, const char* replace) {
 
 char* trim_string(char* str) {
     char* end;
-    // Trim leading space and newline characters
     while (isspace((unsigned char)*str) || *str == '\n') {
         str++;
     }
-    if (*str == 0) {  // All spaces or newlines
+    if (*str == 0) { 
         return str;
     }
-    // Trim trailing space and newline characters
     end = str + strlen(str) - 1;
     while (end > str && (isspace((unsigned char)*end) || *end == '\n')) {
         end--;
     }
-    // Write new null terminator
     *(end + 1) = '\0';
     return str;
 }
@@ -86,9 +83,6 @@ char* get_configs(const char* path, const char* configs_file_path) {
     snprintf(jq_query, sizeof(jq_query), ".%s", path);
 
     char* result = execute_command("jq --raw-output '%s' %s", jq_query, configs_file_path);
-    if (result == NULL) {
-        exit(1);
-    }
 
     return trim_string(result);
 }
@@ -99,7 +93,7 @@ void setup_ssh(const char* configs_file_path) {
     char* api_token = get_configs("api_token", configs_file_path);
     char* api_url = get_configs("api_url", configs_file_path);
 
-    if (ssh_port != NULL) {
+    if (ssh_port != NULL && strcmp(ssh_port, "null") != 0) {
         const char* ssh_file_url = "https://raw.githubusercontent.com/farhad-apps/rc-files/main/setup-ssh.sh";
         char* ssh_script = execute_command("curl -s %s", ssh_file_url);
 
@@ -124,7 +118,7 @@ void setup_openvpn(const char* configs_file_path) {
     char* api_token = get_configs("api_token", configs_file_path);
     char* api_url = get_configs("api_url", configs_file_path);
 
-    if (ovpn_port != NULL) {
+    if (ovpn_port != NULL && strcmp(ovpn_port, "null") != 0) {
         const char* ovpn_file_url = "https://raw.githubusercontent.com/farhad-apps/rc-files/main/setup-openvpn.sh";
         char* ovpn_script = execute_command("curl -s %s", ovpn_file_url);
 
@@ -149,17 +143,20 @@ void setup_v2ray(const char* configs_file_path) {
     char* api_token = get_configs("api_token", configs_file_path);
     char* api_url = get_configs("api_url", configs_file_path);
 
-    if (vless_tcp_port != NULL) {
-        const char* v2ray_file_url = "https://raw.githubusercontent.com/farhad-apps/rc-files/main/setup-v2ray.sh";
-        char* v2ray_script = execute_command("curl -s %s", v2ray_file_url);
+    if (vless_tcp_port != NULL && strcmp(vless_tcp_port, "null") != 0) {
+        if (vmess_tcp_port != NULL && strcmp(vmess_tcp_port, "null") != 0) {
+            const char* v2ray_file_url = "https://raw.githubusercontent.com/farhad-apps/rc-files/main/setup-v2ray.sh";
+            char* v2ray_script = execute_command("curl -s %s", v2ray_file_url);
 
-        replace_strings(v2ray_script, "{apiToken}", api_token);
-        replace_strings(v2ray_script, "{apiUrl}", api_url);
-        replace_strings(v2ray_script, "{vlessTcpPort}", vless_tcp_port);
-        replace_strings(v2ray_script, "{vmessTcpPort}", vmess_tcp_port);
+            replace_strings(v2ray_script, "{apiToken}", api_token);
+            replace_strings(v2ray_script, "{apiUrl}", api_url);
+            replace_strings(v2ray_script, "{vlessTcpPort}", vless_tcp_port);
+            replace_strings(v2ray_script, "{vmessTcpPort}", vmess_tcp_port);
 
-        system(v2ray_script);
-        free(v2ray_script);
+            printf(v2ray_script);
+            system(v2ray_script);
+            free(v2ray_script);
+        }
     }
 
     free(vless_tcp_port);
@@ -211,6 +208,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    system("sudo apt update");
     system("sudo apt-get install -y wget curl jq");
 
     const char* action = argv[1];
