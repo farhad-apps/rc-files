@@ -153,7 +153,6 @@ void setup_v2ray(const char* configs_file_path) {
             replace_strings(v2ray_script, "{vlessTcpPort}", vless_tcp_port);
             replace_strings(v2ray_script, "{vmessTcpPort}", vmess_tcp_port);
 
-            printf(v2ray_script);
             system(v2ray_script);
             free(v2ray_script);
         }
