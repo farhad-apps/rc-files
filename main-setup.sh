@@ -108,5 +108,4 @@ install_packages
 configure_nginx
 configure_rocket_app
 configure_supervisor
-setup_bbr
 complete_install
