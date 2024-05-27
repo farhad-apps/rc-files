@@ -75,7 +75,7 @@ install_xray(){
   local arch=$(get_cpu_vendor)
 
   local url=$(wget -q -O- https://api.github.com/repos/XTLS/Xray-core/releases/latest | jq --arg v "Xray-linux-$arch.zip" -r '.assets[] | select(.name == $v) | .browser_download_url')
-  
+  echo $url
   wget -O "$xray_path/xray.zip" "$url"
   unzip "$xray_path/xray.zip" -d "$xray_path/"
   rm "$xray_path/xray.zip"
