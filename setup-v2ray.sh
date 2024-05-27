@@ -5,15 +5,15 @@ api_url="{apiUrl}"
 vless_tcp_port={vlessTcpPort}
 vmess_tcp_port={vmessTcpPort}
 
-
 xray_path="/var/rocket-ssh/xray"
 xray_conf_path="/var/rocket-ssh/xray/conf/"
-mkdir -p $xray_path
 
-if [ -d /var/rocket-ssh/xray ]; then
+if [ -d $xray_path ]; then
     systemctl stop rsxray
     rm -R $xray_path
 fi
+
+mkdir -p $xray_path
 
 get_cpu_vendor(){
   case "$(uname -m)" in
