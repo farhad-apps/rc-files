@@ -130,7 +130,29 @@ cat <<EOF >${xray_conf_path}01_vless_tcp.json
       },
       "streamSettings": {
         "network": "tcp",
-        "security": "none"
+        "security": "none",
+         "tcpSettings": {
+          "header": {
+            "type": "http",
+            "response": {
+              "version": "1.1",
+              "status": "200",
+              "reason": "OK",
+              "headers": {
+                "Content-Type": [
+                  "application/octet-stream",
+                  "video/mpeg",
+                  "application/x-msdownload",
+                  "text/html",
+                  "application/x-shockwave-flash"
+                ],
+                "Transfer-Encoding": ["chunked"],
+                "Connection": ["keep-alive"],
+                "Pragma": "no-cache"
+              }
+            }
+          }
+        }
       }
     }
   ]
@@ -150,7 +172,29 @@ cat <<EOF >${xray_conf_path}02_vmess_tcp.json
       },
       "streamSettings": {
         "network": "tcp",
-        "security": "none"
+        "security": "none",
+         "tcpSettings": {
+          "header": {
+            "type": "http",
+            "response": {
+              "version": "1.1",
+              "status": "200",
+              "reason": "OK",
+              "headers": {
+                "Content-Type": [
+                  "application/octet-stream",
+                  "video/mpeg",
+                  "application/x-msdownload",
+                  "text/html",
+                  "application/x-shockwave-flash"
+                ],
+                "Transfer-Encoding": ["chunked"],
+                "Connection": ["keep-alive"],
+                "Pragma": "no-cache"
+              }
+            }
+          }
+        }
       }
     }
   ]
