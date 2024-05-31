@@ -258,31 +258,41 @@ const helpers = {
     const vlessFilePath = "/var/rocket-ssh/xray/conf/01_vless_tcp.json";
     const userEmail = `${username}@rocket-ssh.com`
 
-    helpers.v2rayActionUserFile(vmessFilePath, action, uuid, userEmail);
-    helpers.v2rayActionUserFile(vlessFilePath, action, uuid, userEmail);
+    await helpers.v2rayActionUserFile(vmessFilePath, action, uuid, userEmail);
+    await helpers.v2rayActionUserFile(vlessFilePath, action, uuid, userEmail);
   },
   v2rayActionUserFile: (filePath, action, uuid, userEmail) => {
-    fs.readFile(filePath, 'utf8', (err, data) => {
-      if (err) {
-        return;
-      }
-      const configs = JSON.parse(data);
-      var lastClients = configs.inbounds[0].settings.clients;
-      if (action === "create") {
-        var findUser = helpers.v2rayHasUer(lastClients, userEmail);
-        if (!findUser) {
-          lastClients.push({
-            id: uuid,
-            level: 0,
-            email: userEmail,
-          })
+    return new Promise((resolve, reject) => {
+      fs.readFile(filePath, 'utf8', (err, data) => {
+        if (err) {
+          reject(err);
+          return;
         }
-      } else if (action === "delete") {
-        lastClients = lastClients.filter((client) => client.email !== userEmail);
-      }
-      configs.inbounds[0].settings.clients = lastClients;
-      const modifiedData = JSON.stringify(configs, null, 2);
-      fs.writeFile(filePath, modifiedData, 'utf8', (err) => {
+        const configs = JSON.parse(data);
+        const lastClients = configs.inbounds[0].settings.clients;
+
+        if (action === "create") {
+          const findUser = helpers.v2rayHasUer(lastClients, userEmail);
+          if (!findUser) {
+            lastClients.push({
+              id: uuid,
+              level: 0,
+              email: userEmail,
+            });
+          }
+        } else if (action === "delete") {
+          const updatedClients = lastClients.filter((client) => client.email !== userEmail);
+          configs.inbounds[0].settings.clients = updatedClients;
+        }
+
+        const modifiedData = JSON.stringify(configs, null, 2);
+        fs.writeFile(filePath, modifiedData, 'utf8', (err) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve();
+        });
       });
     });
   }
@@ -495,7 +505,6 @@ const hanldeApiAction = async (pdata) => {
         for (var user of users) {
           await apiActions.createUser(user);
         }
-
         if (settings.enabled_v2ray) {
           runCmd("systemctl restart rsxray")
         }
@@ -605,7 +614,7 @@ const server = http.createServer(async (req, res) => {
             return res.end(JSON.stringify(result));
           }
         } catch (err) {
-          console.log("error",err)
+          console.log("error", err)
         }
       }
 
