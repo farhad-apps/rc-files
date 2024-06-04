@@ -137,26 +137,22 @@ cat <<EOF >${xray_conf_path}01_vless_tcp.json
       "streamSettings": {
         "network": "tcp",
         "security": "none",
-         "tcpSettings": {
+        "tcpSettings": {
+          "acceptProxyProtocol": false,
           "header": {
-            "type": "http",
+            "request": {
+              "headers": {},
+              "method": "GET",
+              "path": ["/"],
+              "version": "1.1"
+            },
             "response": {
-              "version": "1.1",
-              "status": "200",
+              "headers": {},
               "reason": "OK",
-              "headers": {
-                "Content-Type": [
-                  "application/octet-stream",
-                  "video/mpeg",
-                  "application/x-msdownload",
-                  "text/html",
-                  "application/x-shockwave-flash"
-                ],
-                "Transfer-Encoding": ["chunked"],
-                "Connection": ["keep-alive"],
-                "Pragma": "no-cache"
-              }
-            }
+              "status": "200",
+              "version": "1.1"
+            },
+            "type": "http"
           }
         }
       }
@@ -179,26 +175,22 @@ cat <<EOF >${xray_conf_path}02_vmess_tcp.json
       "streamSettings": {
         "network": "tcp",
         "security": "none",
-         "tcpSettings": {
+        "tcpSettings": {
+          "acceptProxyProtocol": false,
           "header": {
-            "type": "http",
+            "request": {
+              "headers": {},
+              "method": "GET",
+              "path": ["/"],
+              "version": "1.1"
+            },
             "response": {
-              "version": "1.1",
-              "status": "200",
+              "headers": {},
               "reason": "OK",
-              "headers": {
-                "Content-Type": [
-                  "application/octet-stream",
-                  "video/mpeg",
-                  "application/x-msdownload",
-                  "text/html",
-                  "application/x-shockwave-flash"
-                ],
-                "Transfer-Encoding": ["chunked"],
-                "Connection": ["keep-alive"],
-                "Pragma": "no-cache"
-              }
-            }
+              "status": "200",
+              "version": "1.1"
+            },
+            "type": "http"
           }
         }
       }
