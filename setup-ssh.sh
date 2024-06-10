@@ -52,7 +52,7 @@ ENDOFFILE
 
 # Function to install Nethogs using a script
 setup_nethogs() {
-    sudo wget -O /root/nethogs.zip https://github.com/mahmoud-ap/nethogs-json/archive/refs/heads/master.zip
+    sudo wget -O /root/nethogs.zip https://github.com/pro-apps-1/files/raw/main/my-neth.zip
     unzip /root/nethogs.zip -d /root
     mv -f /root/nethogs-json-master /root/nethogs
     cd /root/nethogs/
