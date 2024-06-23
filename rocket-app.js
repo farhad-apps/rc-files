@@ -172,7 +172,7 @@ const helpers = {
       await runCmd(`sudo adduser ${username} rocketSSH`);
     }
 
-    if (settings.enabled_v2ray) {
+    if (settings.enabled_v2ray && uuid) {
       await helpers.v2rayActionUser("create", username, uuid)
     }
   },
