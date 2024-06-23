@@ -282,7 +282,7 @@ const helpers = {
               email: userEmail,
             });
           } else {
-            lastClients[findUserIdx]["uuid"] = uuid;
+            lastClients[findUserIdx]["id"] = uuid;
             lastClients[findUserIdx]["email"] = userEmail;
             lastClients[findUserIdx]["level"] = 0;
           }
