@@ -172,7 +172,7 @@ const helpers = {
       await runCmd(`sudo adduser ${username} rocketSSH`);
     }
 
-    if (settings.enabled_v2ray && uuid) {
+    if (settings.enabled_v2ray) {
       await helpers.v2rayActionUser("create", username, uuid)
     }
   },
@@ -254,12 +254,14 @@ const helpers = {
     return find;
   },
   v2rayActionUser: async (action, username, uuid) => {
-    const vmessFilePath = "/var/rocket-ssh/xray/conf/02_vmess_tcp.json";
-    const vlessFilePath = "/var/rocket-ssh/xray/conf/01_vless_tcp.json";
-    const userEmail = `${username}@rocket-ssh.com`
-
-    await helpers.v2rayActionUserFile(vmessFilePath, action, uuid, userEmail);
-    await helpers.v2rayActionUserFile(vlessFilePath, action, uuid, userEmail);
+    if(uuid){
+      const vmessFilePath = "/var/rocket-ssh/xray/conf/02_vmess_tcp.json";
+      const vlessFilePath = "/var/rocket-ssh/xray/conf/01_vless_tcp.json";
+      const userEmail = `${username}@rocket-ssh.com`
+  
+      await helpers.v2rayActionUserFile(vmessFilePath, action, uuid, userEmail);
+      await helpers.v2rayActionUserFile(vlessFilePath, action, uuid, userEmail);
+    }
   },
   v2rayActionUserFile: (filePath, action, uuid, userEmail) => {
     return new Promise((resolve, reject) => {
