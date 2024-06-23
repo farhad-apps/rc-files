@@ -241,12 +241,12 @@ const helpers = {
     }
     return false;
   },
-  v2rayFindUser: (clients, userEmail) => {
+  v2rayFindUser: (clients, uuid) => {
     var find = false;
     if (clients && clients.length) {
       clients.map((client, idx) => {
-        const email = client["email"];
-        if (userEmail === email) {
+        const userId = client["id"];
+        if (uuid === userId) {
           find = idx;
         }
       })
@@ -274,8 +274,8 @@ const helpers = {
         const lastClients = configs.inbounds[0].settings.clients;
 
         if (action === "create") {
-          const findUserIdx = helpers.v2rayFindUser(lastClients, userEmail);
-          if (!findUserIdx) {
+          const findUserIdx = helpers.v2rayFindUser(lastClients, uuid);
+          if (findUserIdx === false) {
             lastClients.push({
               id: uuid,
               level: 0,
