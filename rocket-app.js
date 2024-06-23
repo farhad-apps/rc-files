@@ -241,24 +241,24 @@ const helpers = {
     }
     return false;
   },
-  v2rayHasUer: (clients, userEmail) => {
+  v2rayFindUser: (clients, userEmail) => {
     var find = false;
     if (clients && clients.length) {
-      for (var client of clients) {
+      clients.map((client, idx) => {
         const email = client["email"];
         if (userEmail === email) {
-          find = true;
+          find = idx;
         }
-      }
+      })
     }
     return find;
   },
   v2rayActionUser: async (action, username, uuid) => {
-    if(uuid){
+    if (uuid) {
       const vmessFilePath = "/var/rocket-ssh/xray/conf/02_vmess_tcp.json";
       const vlessFilePath = "/var/rocket-ssh/xray/conf/01_vless_tcp.json";
       const userEmail = `${username}@rocket-ssh.com`
-  
+
       await helpers.v2rayActionUserFile(vmessFilePath, action, uuid, userEmail);
       await helpers.v2rayActionUserFile(vlessFilePath, action, uuid, userEmail);
     }
@@ -274,13 +274,17 @@ const helpers = {
         const lastClients = configs.inbounds[0].settings.clients;
 
         if (action === "create") {
-          const findUser = helpers.v2rayHasUer(lastClients, userEmail);
-          if (!findUser) {
+          const findUserIdx = helpers.v2rayFindUser(lastClients, userEmail);
+          if (!findUserIdx) {
             lastClients.push({
               id: uuid,
               level: 0,
               email: userEmail,
             });
+          } else {
+            lastClients[findUserIdx]["uuid"] = uuid;
+            lastClients[findUserIdx]["email"] = userEmail;
+            lastClients[findUserIdx]["level"] = 0;
           }
         } else if (action === "delete") {
           const updatedClients = lastClients.filter((client) => client.email !== userEmail);
