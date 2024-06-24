@@ -182,13 +182,14 @@ const helpers = {
     await runCmd(`sudo timeout 10 pkill -u ${username}`);
     await runCmd(`sudo timeout 10 killall -u ${username}`);
   },
-  removeUser: async (username) => {
+  removeUser: async (username, uuid) => {
     if (settings.enabled_ssh) {
       const cmd = `sudo userdel -r ${username}`;
       await runCmd(cmd);
     }
+
     if (settings.enabled_v2ray) {
-      await helpers.v2rayActionUser("delete", username)
+      await helpers.v2rayActionUser("delete", username, uuid)
     }
   },
   getUsersList: async () => {
@@ -241,12 +242,12 @@ const helpers = {
     }
     return false;
   },
-  v2rayFindUser: (clients, uuid) => {
+  v2rayFindUser: (clients, userEmail) => {
     var find = false;
     if (clients && clients.length) {
       clients.map((client, idx) => {
-        const userId = client["id"];
-        if (uuid === userId) {
+        const email = client["email"];
+        if (userEmail === email) {
           find = idx;
         }
       })
@@ -274,7 +275,7 @@ const helpers = {
         const lastClients = configs.inbounds[0].settings.clients;
 
         if (action === "create") {
-          const findUserIdx = helpers.v2rayFindUser(lastClients, uuid);
+          const findUserIdx = helpers.v2rayFindUser(lastClients, userEmail);
           if (findUserIdx === false) {
             lastClients.push({
               id: uuid,
@@ -287,6 +288,7 @@ const helpers = {
             lastClients[findUserIdx]["level"] = 0;
           }
         } else if (action === "delete") {
+
           const updatedClients = lastClients.filter((client) => client.email !== userEmail);
           configs.inbounds[0].settings.clients = updatedClients;
         }
@@ -310,19 +312,19 @@ const apiActions = {
     await helpers.createUser(username, password, uuid);
   },
   removeUser: async (pdata) => {
-    const { username } = pdata;
+    const { username, uuid } = pdata;
     await helpers.killUser(username);
-    await helpers.removeUser(username);
+    await helpers.removeUser(username, uuid);
   },
   killUser: async (pdata) => {
     const { username } = pdata;
     await helpers.killUser(username);
   },
   updateUser: async (pdata) => {
-    const { username, password } = pdata;
+    const { username, password, uuid } = pdata;
     await helpers.killUser(username);
-    await helpers.removeUser(username);
-    await helpers.createUser(username, password);
+    await helpers.removeUser(username, uuid);
+    await helpers.createUser(username, password, uuid);
   },
   killUserByPid: async (pdata) => {
     const { pid, user_ip, protocol } = pdata;
@@ -521,7 +523,6 @@ const hanldeApiAction = async (pdata) => {
         for (var user of users) {
           await apiActions.removeUser(user);
         }
-
         if (settings.enabled_v2ray) {
           runCmd("systemctl restart rsxray")
         }
