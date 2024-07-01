@@ -16,7 +16,7 @@ config_needrestart() {
 }
 
 install_packages() {
-
+    sudo ufw disable
     sudo apt-get purge -y supervisor nginx
     sudo apt-get install -y nginx nodejs supervisor psmisc zip unzip wget curl
 
