@@ -21,9 +21,9 @@ setup_udpgw_service() {
     else
         local vendorId=$(lscpu | awk -F': ' '/Vendor ID/ {gsub(/^[ \t]+|[ \t]+$/, "", $2); print $2}')
         if [ "$vendorId" = "ARM" ]; then
-            sudo wget -O /usr/bin/badvpn-udpgw "https://raw.githubusercontent.com/mahmoud-ap/badvpn/master/udpgw-arm"
+            sudo wget -O /usr/bin/badvpn-udpgw "https://raw.githubusercontent.com/rocket-ap/badvpn/master/udpgw-arm"
         else
-            sudo wget -O /usr/bin/badvpn-udpgw "https://raw.githubusercontent.com/mahmoud-ap/badvpn/master/udpgw-x86"
+            sudo wget -O /usr/bin/badvpn-udpgw "https://raw.githubusercontent.com/rocket-ap/badvpn/master/udpgw-x86"
         fi
 
         chmod 777 /usr/bin/badvpn-udpgw
