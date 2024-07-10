@@ -9,6 +9,7 @@ const path = require('path');
 const API_URL = "{rapiUrl}";
 const API_TOKEN = "{rapiToken}";
 
+
 var settings = {
   calc_traffic: 1,
 };
@@ -28,6 +29,21 @@ const runCmd = (command) => {
 };
 
 const helpers = {
+  parseV2Traffic: (data) => {
+    const result = [];
+    data.map((item) => {
+      const parts = item.name.split('>>>');
+      const username = parts[1].split('@')[0];
+      var trafficType = parts[3];
+      var user = { u: username };
+      var value = item.value ? item.value : '0';
+      trafficType = trafficType == "download" ? "dl" : "up";
+      user[trafficType] = value;
+      result.push(user)
+    });
+
+    return result;
+  },
   checkServiceExists: async (serviceName) => {
     const command = `systemctl list-units --type=service | grep "${serviceName}";`;
     const { stdout } = await runCmd(command);
@@ -462,12 +478,18 @@ const LoopMethods = {
       const command = `/var/rocket-ssh/xray/xray api statsquery --server="127.0.0.1:65432"`;
       runCmd(command).then(res => {
         const { stdout } = res;
+        console.log("dddd");
         if (stdout) {
-          const base64Encoded = Buffer.from(stdout).toString("base64");
-          const pdata = JSON.stringify({ data: base64Encoded });
-          sendToApi("v2ray/utraffic", pdata);
-          const resetCommand = `${command} --reset : true`;
-          runCmd(resetCommand)
+          const data = JSON.parse(stdout);
+          if (data.stat) {
+            var _pdata = helpers.parseV2Traffic(data.stat)
+            _pdata = JSON.stringify(_pdata);
+            const base64Encoded = Buffer.from(_pdata).toString("base64");
+            const pdata = JSON.stringify({ data: base64Encoded });
+            sendToApi("v2ray/utraffic", pdata);
+            const resetCommand = `${command} --reset : true`;
+            runCmd(resetCommand)
+          }
         }
         setTimeout(LoopMethods.sendV2rayTraffic, 10000);
       }).catch((err) => {
