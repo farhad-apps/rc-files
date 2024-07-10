@@ -478,7 +478,6 @@ const LoopMethods = {
       const command = `/var/rocket-ssh/xray/xray api statsquery --server="127.0.0.1:65432"`;
       runCmd(command).then(res => {
         const { stdout } = res;
-        console.log("dddd");
         if (stdout) {
           const data = JSON.parse(stdout);
           if (data.stat) {
