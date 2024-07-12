@@ -37,7 +37,7 @@ const helpers = {
       var trafficType = parts[3];
       var user = { u: username };
       var value = item.value ? item.value : '0';
-      trafficType = trafficType == "download" ? "dl" : "up";
+      trafficType = trafficType == "downlink" ? "dl" : "up";
       user[trafficType] = value;
       result.push(user)
     });
