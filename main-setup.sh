@@ -17,16 +17,23 @@ config_needrestart() {
 
 install_packages() {
     sudo ufw disable
-    sudo apt-get purge -y supervisor nginx
-    sudo apt-get install -y nginx nodejs supervisor psmisc zip unzip wget curl
+    sudo apt-get purge -y supervisor
+    sudo apt-get install -y nodejs supervisor psmisc zip unzip wget curl
+
+    if ! command -v nginx >/dev/null 2>&1; then
+        sudo apt-get install -y nginx
+    fi
 
 }
 
 configure_nginx(){
+    ROCKET_FILE="/etc/nginx/sites-available/rocket"
 
-    cat > /etc/nginx/sites-available/default << ENDOFFILE
+    if [ ! -e "$ROCKET_FILE" ]; then
+
+        cat > /etc/nginx/sites-available/default << ENDOFFILE
 server {
-    listen 0.0.0.0;
+    listen 80;
     server_name localhost;
 
     location /papi {
@@ -44,6 +51,30 @@ server {
     }
 }
 ENDOFFILE
+
+    else
+        sudo tee /etc/nginx/sites-available/srocket <<'EOF'
+server {
+    listen 8443;
+    server_name localhost;
+
+    location /papi {
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header Host \$http_host;
+        proxy_set_header X-NginX-Proxy true;
+
+        proxy_read_timeout 300s;
+        proxy_connect_timeout 300s;
+        proxy_send_timeout 300s;
+
+        proxy_pass http://127.0.0.1:3000/;
+        proxy_redirect off;
+    }
+}
+
+EOF
+    fi
 
     sudo systemctl restart nginx
 }
