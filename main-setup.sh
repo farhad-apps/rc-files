@@ -23,11 +23,12 @@ install_packages() {
 }
 
 configure_nginx(){
-
-    cat > /etc/nginx/sites-available/default << ENDOFFILE
+    CONF_FILE="/etc/nginx/sites-available/rocket.app"
+    
+    cat > $CONF_FILE << ENDOFFILE
 server {
     listen 0.0.0.0;
-    server_name localhost;
+    server_name rocket.app;
 
     location /papi {
         proxy_set_header X-Real-IP \$remote_addr;
@@ -45,6 +46,7 @@ server {
 }
 ENDOFFILE
 
+    ln -s $CONF_FILE /etc/nginx/sites-enabled/
     sudo systemctl restart nginx
 
 }
