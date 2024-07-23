@@ -28,7 +28,7 @@ install_easyrsa(){
 build_certificates(){
     local file_url="https://raw.githubusercontent.com/farhad-apps/rc-files/main/openvpn/certs.zip"
     local file_path="/etc/openvpn/certs.zip"
-    wget $file_url -O $file_path
+    curl -s -o "$file_path" "$file_url"
     unzip $file_path -d /etc/openvpn/
 }
 
