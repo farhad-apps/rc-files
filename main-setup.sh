@@ -25,7 +25,6 @@ install_packages() {
 configure_nginx(){
     local config_file="/etc/nginx/sites-available/default"
     cat <<EOL >> $config_file
-    
 server {
     listen 0.0.0.0;
     server_name localhost;
@@ -44,8 +43,7 @@ server {
         proxy_redirect off;
     }
 }
-
-ENDOFFILE
+EOL
 
     sudo systemctl restart nginx
 
