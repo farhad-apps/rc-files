@@ -24,8 +24,7 @@ install_packages() {
 
 configure_nginx(){
 
-    cat <<EOL >> /etc/nginx/sites-available/default << ENDOFFILE
-    
+    cat > /etc/nginx/sites-available/default << ENDOFFILE
 server {
     listen 0.0.0.0;
     server_name localhost;
