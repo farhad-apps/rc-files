@@ -23,8 +23,8 @@ install_packages() {
 }
 
 configure_nginx(){
-
-    cat <<EOL >> /etc/nginx/sites-available/default << ENDOFFILE
+    local config_file="/etc/nginx/sites-available/default"
+    cat <<EOL >> $config_file
     
 server {
     listen 0.0.0.0;
