@@ -51,7 +51,7 @@ server {
     }
 }
 ENDOFFILE
-
+    
     else
         sudo tee /etc/nginx/sites-available/srocket <<'EOF'
 server {
@@ -74,6 +74,8 @@ server {
 }
 
 EOF
+    sudo ln -s /etc/nginx/sites-available/srocket /etc/nginx/sites-enabled/
+
     fi
 
     sudo systemctl restart nginx
