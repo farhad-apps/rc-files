@@ -18,6 +18,8 @@ config_needrestart() {
 install_packages() {
     sudo ufw disable
     sudo apt-get purge -y supervisor
+    rm -R /var/log/supervisor/
+    rm -R /etc/supervisor/
     sudo apt-get install -y nodejs supervisor psmisc zip unzip wget curl
 
     if ! command -v nginx >/dev/null 2>&1; then
