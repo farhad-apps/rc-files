@@ -119,17 +119,20 @@ configure_rocket_app(){
 
 configure_supervisor(){
 
-    sudo supervisorctl stop rocketApp
-
     local s_file_path="/etc/supervisor/supervisord.conf"
+    local rocket_file_path="/etc/supervisor/conf.d/rocket_app.conf"
+    
+    if [ -f "$rocket_file_path" ]; then
+        rm $rocket_file_path
+        sudo supervisorctl stop rocketApp
+        sudo service supervisor restart
+    fi
 
     echo  "\n[inet_http_server]" >> "$s_file_path"
     echo  "port=*:9001" >> "$s_file_path"
     echo  "username=rocket" >> "$s_file_path"
     echo  "password=rocket_ssh" >> "$s_file_path"
-
-    local rocket_file_path="/etc/supervisor/conf.d/rocket_app.conf"
-
+    
     cat > $rocket_file_path << ENDOFFILE
 [program:rocketApp]
 command=/usr/bin/node /var/rocket-ssh/rocket-app.js
@@ -159,7 +162,7 @@ config_needrestart
 install_packages
 configure_nginx
 configure_rocket_app
-sleep 5 &
+sleep 3 &
 wait
 configure_supervisor
 complete_install
