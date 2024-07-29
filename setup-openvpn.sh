@@ -13,7 +13,7 @@ fi
 
 install_dependencies(){
 
-  apt-get install -y openvpn iptables ca-certificates gnupg
+  sudo apt-get install -y openvpn iptables ca-certificates gnupg
 }
 
 install_easyrsa(){
