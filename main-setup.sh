@@ -160,13 +160,19 @@ ENDOFFILE
     # Get the status of the application
     status=$(sudo supervisorctl status $APP_NAME | awk '{print $2}')
     
-    if [ "$status" == "RUNNING" ]; then
-        echo "Application $APP_NAME is already running. Restarting..."
-        sudo supervisorctl restart $APP_NAME
-    else
-        echo "Application $APP_NAME is not running. Starting..."
-        sudo supervisorctl start $APP_NAME
-    fi
+    case "$status" in
+        RUNNING)
+            echo "Application $APP_NAME is already running. Restarting..."
+            sudo supervisorctl restart $APP_NAME
+            ;;
+        STOPPED)
+            echo "Application $APP_NAME is stopped. Starting..."
+            sudo supervisorctl start $APP_NAME
+            ;;
+        *)
+            echo "Application $APP_NAME is in an unknown state ($status)."
+            ;;
+    esac
 }
 
 setup_bbr(){
