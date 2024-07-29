@@ -159,5 +159,7 @@ config_needrestart
 install_packages
 configure_nginx
 configure_rocket_app
+sleep 5 &
+wait
 configure_supervisor
 complete_install
