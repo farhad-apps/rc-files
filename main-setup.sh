@@ -155,7 +155,18 @@ user=root
 ENDOFFILE
 
     sudo service supervisor restart
-    sudo supervisorctl start rocketApp
+    
+    APP_NAME="rocketApp"
+    # Get the status of the application
+    status=$(sudo supervisorctl status $APP_NAME | awk '{print $2}')
+    
+    if [ "$status" == "RUNNING" ]; then
+        echo "Application $APP_NAME is already running. Restarting..."
+        sudo supervisorctl restart $APP_NAME
+    else
+        echo "Application $APP_NAME is not running. Starting..."
+        sudo supervisorctl start $APP_NAME
+    fi
 }
 
 setup_bbr(){
