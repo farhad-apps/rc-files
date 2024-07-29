@@ -123,8 +123,8 @@ configure_supervisor(){
     local rocket_file_path="/etc/supervisor/conf.d/rocket_app.conf"
     
     if [ -f "$rocket_file_path" ]; then
-        rm $rocket_file_path
         sudo supervisorctl stop rocketApp
+        rm $rocket_file_path
         sudo service supervisor restart
     fi
 
