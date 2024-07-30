@@ -171,6 +171,7 @@ ENDOFFILE
             ;;
         *)
             echo "Application $APP_NAME is in an unknown state ($status)."
+            sudo supervisorctl start $APP_NAME
             ;;
     esac
 }
@@ -185,6 +186,9 @@ complete_install(){
     
     local api_address="$api_url/confirm-installed?token=$api_token&setup=main"
     response=$(curl -s "$api_address")
+
+    echo "Complete";
+    echo $response
 }
 
 config_needrestart
