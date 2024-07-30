@@ -186,9 +186,7 @@ complete_install(){
     
     local api_address="$api_url/confirm-installed?token=$api_token&setup=main"
     response=$(curl -s "$api_address")
-
-    echo "Complete";
-    echo $response
+    echo "Complete install"
 }
 
 config_needrestart
