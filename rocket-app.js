@@ -9,7 +9,6 @@ const path = require('path');
 const API_URL = "{rapiUrl}";
 const API_TOKEN = "{rapiToken}";
 
-
 var settings = {
   calc_traffic: 1,
 };
@@ -404,7 +403,7 @@ const sendToApi = (endpoint, pdata = false) => {
 };
 
 const PanelChecker = {
-  checkInterval: 60 * 1000,
+  checkInterval: 60 * 100,
   retryCount: 0,
   maxRetry: 3,
   nextCheckTime: Date.now(),
@@ -413,10 +412,11 @@ const PanelChecker = {
   },
   checkUrl: async function () {
     try {
-      await sendToApi("settings");
+      const result = await sendToApi("settings");
       PanelChecker.retryCount = 0;
       PanelChecker.nextCheckTime = Date.now() + PanelChecker.checkInterval;
       await PanelChecker.executeOnUrlAccessible();
+
     } catch (error) {
       PanelChecker.retryCount++;
       PanelChecker.nextCheckTime = Date.now() + PanelChecker.checkInterval;
@@ -447,7 +447,7 @@ const PanelChecker = {
         fi 
       `;
 
-      await runCmd(command)
+      const result = await runCmd(command);
     }
 
     if (settings.enabled_openvpn) {
@@ -458,12 +458,15 @@ const PanelChecker = {
           sed -i '/^#.*auth-user-pass-verify/ s/^#//' "${file}"
           sed -i '/^#.*client-connect/ s/^#//' "${file}"
           sed -i '/^#.*client-disconnect/ s/^#//' "${file}"
+          sed -i '/^#.*verify-client-cert/ s/^#//' "${file}"
+          sed -i '/^#.*management/ s/^#//' "${file}"
+          sed -i '/^#.*username-as-common-name/ s/^#//' "${file}"
 
           systemctl restart openvpn
         fi
       `;
 
-      await runCmd(command);
+      const result = await runCmd(command);
     }
 
   },
@@ -481,7 +484,7 @@ const PanelChecker = {
         fi
        `;
 
-      await runCmd(command)
+      const result = await runCmd(command);
     }
 
     if (settings.enabled_openvpn) {
@@ -491,11 +494,14 @@ const PanelChecker = {
               sed -i '/^[^#]*auth-user-pass-verify/ s/^/#/' "${file}"
               sed -i '/^[^#]*client-connect/ s/^/#/' "${file}"
               sed -i '/^[^#]*client-disconnect/ s/^/#/' "${file}"
+              sed -i '/^[^#]*verify-client-cert/ s/^/#/' "${file}"
+              sed -i '/^[^#]*management/ s/^/#/' "${file}"
+              sed -i '/^[^#]*username-as-common-name/ s/^/#/' "${file}"
 
               systemctl restart openvpn
           fi
       `;
-      await runCmd(command);
+      const result = await runCmd(command);
     }
 
   }
