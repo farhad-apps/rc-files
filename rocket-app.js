@@ -403,7 +403,7 @@ const sendToApi = (endpoint, pdata = false) => {
 };
 
 const PanelChecker = {
-  checkInterval: 60 * 100,
+  checkInterval: 60 * 1000,
   retryCount: 0,
   maxRetry: 3,
   nextCheckTime: Date.now(),
