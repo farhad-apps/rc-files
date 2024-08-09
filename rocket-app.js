@@ -403,6 +403,104 @@ const sendToApi = (endpoint, pdata = false) => {
   });
 };
 
+const PanelChecker = {
+  checkInterval: 60 * 1000,
+  retryCount: 0,
+  maxRetry: 3,
+  nextCheckTime: Date.now(),
+  start: function () {
+    PanelChecker.scheduleNextCheck();
+  },
+  checkUrl: async function () {
+    try {
+      await sendToApi("settings");
+      PanelChecker.retryCount = 0;
+      PanelChecker.nextCheckTime = Date.now() + PanelChecker.checkInterval;
+      await PanelChecker.executeOnUrlAccessible();
+    } catch (error) {
+      PanelChecker.retryCount++;
+      PanelChecker.nextCheckTime = Date.now() + PanelChecker.checkInterval;
+      if (PanelChecker.retryCount >= PanelChecker.maxRetry) {
+        await PanelChecker.executeOnMaxRetry();
+      }
+    }
+    PanelChecker.scheduleNextCheck();
+  },
+  scheduleNextCheck: function () {
+    const currentTime = Date.now();
+    const delay = Math.max(0, PanelChecker.nextCheckTime - currentTime);
+    setTimeout(() => {
+      PanelChecker.checkUrl();
+    }, delay);
+  },
+  executeOnUrlAccessible: async function () {
+    if (settings.enabled_ssh) {
+      const file = '/etc/pam.d/sshd';
+      const command = `
+        if grep -qF "#auth required rocket_ssh_auth.so" "${file}"; then
+
+          sed -i "s|^#auth required rocket_ssh_auth.so|auth required rocket_ssh_auth.so|" "${file}";
+          sed -i "s|^#session required rocket_ssh_auth.so|session required rocket_ssh_auth.so|" "${file}";
+
+          sudo systemctl restart ssh
+          sudo systemctl restart sshd
+        fi 
+      `;
+
+      await runCmd(command)
+    }
+
+    if (settings.enabled_openvpn) {
+      const file = '/etc/openvpn/server.conf';
+      const command = `
+        if grep -q '^#.*auth-user-pass-verify' "${file}"; then
+        
+          sed -i '/^#.*auth-user-pass-verify/ s/^#//' "${file}"
+          sed -i '/^#.*client-connect/ s/^#//' "${file}"
+          sed -i '/^#.*client-disconnect/ s/^#//' "${file}"
+
+          systemctl restart openvpn
+        fi
+      `;
+
+      await runCmd(command);
+    }
+
+  },
+  executeOnMaxRetry: async function () {
+
+    if (settings.enabled_ssh) {
+      const file = '/etc/pam.d/sshd';
+      const command = `
+        if ! grep -qF "#auth required rocket_ssh_auth.so" "${file}"; then
+          sed -i "s|^auth required rocket_ssh_auth.so|#auth required rocket_ssh_auth.so|" "${file}";
+          sed -i "s|^session required rocket_ssh_auth.so|#session required rocket_ssh_auth.so|" "${file}";
+
+          sudo systemctl restart ssh
+          sudo systemctl restart sshd
+        fi
+       `;
+
+      await runCmd(command)
+    }
+
+    if (settings.enabled_openvpn) {
+      const file = '/etc/openvpn/server.conf';
+      const command = `
+          if grep -q '^[^#]*auth-user-pass-verify' "${file}"; then
+              sed -i '/^[^#]*auth-user-pass-verify/ s/^/#/' "${file}"
+              sed -i '/^[^#]*client-connect/ s/^/#/' "${file}"
+              sed -i '/^[^#]*client-disconnect/ s/^/#/' "${file}"
+
+              systemctl restart openvpn
+          fi
+      `;
+      await runCmd(command);
+    }
+
+  }
+};
+
 const LoopMethods = {
   doStart: async () => {
     LoopMethods.getSettings();
@@ -412,6 +510,7 @@ const LoopMethods = {
     LoopMethods.resetSshSerivces();
     LoopMethods.removeAuthLog();
     LoopMethods.sendUsersAuthPids();
+    PanelChecker.start();
 
     console.log("start loop methods");
   },
