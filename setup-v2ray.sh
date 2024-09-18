@@ -156,25 +156,7 @@ cat <<EOF >${xray_conf_path}02_vmess_tcp.json
       },
       "streamSettings": {
         "network": "tcp",
-        "security": "none",
-        "tcpSettings": {
-          "acceptProxyProtocol": false,
-          "header": {
-            "request": {
-              "headers": {},
-              "method": "GET",
-              "path": ["/"],
-              "version": "1.1"
-            },
-            "response": {
-              "headers": {},
-              "reason": "OK",
-              "status": "200",
-              "version": "1.1"
-            },
-            "type": "http"
-          }
-        }
+        "security": "none"
       }
     }
   ]
