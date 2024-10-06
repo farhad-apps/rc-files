@@ -595,12 +595,12 @@ const LoopMethods = {
             runCmd(resetCommand)
           }
         }
-        setTimeout(LoopMethods.sendV2rayTraffic, 10000);
+        setTimeout(LoopMethods.sendV2rayTraffic, 60*1000);
       }).catch((err) => {
-        setTimeout(LoopMethods.sendV2rayTraffic, 10000);
+        setTimeout(LoopMethods.sendV2rayTraffic, 60*1000);
       });
     } else {
-      setTimeout(LoopMethods.sendV2rayTraffic, 10000);
+      setTimeout(LoopMethods.sendV2rayTraffic, 60*1000);
     }
   },
   resetSshSerivces: async () => {
