@@ -227,6 +227,64 @@ EOF
   ]
 }
 EOF
+
+cat <<EOF >${xray_conf_path}y_deco_api.json
+{
+  "inbounds": [
+    {
+      "listen": "127.0.0.1",
+      "protocol": "dokodemo-door",
+      "settings": {
+        "address": "127.0.0.1"
+      },
+      "tag": "api",
+      "port": 65432
+    }
+  ]
+}
+EOF
+
+cat <<EOF >${xray_conf_path}z_configs.json
+{
+  "outbounds": [
+    {
+      "protocol": "freedom"
+    }
+  ],
+  "stats": {},
+  "policy": {
+    "levels": {
+      "0": {
+        "statsUserUplink": true,
+        "statsUserDownlink": true
+      }
+    },
+    "system": {
+      "statsOutboundUplink": true,
+      "statsOutboundDownlink": true
+    }
+  },
+  "api": {
+    "tag": "api",
+    "services": [
+      "StatsService"
+    ]
+  },
+  "routing": {
+    "rules": [
+      {
+        "inboundTag": [
+          "api"
+        ],
+        "outboundTag": "api",
+        "type": "field"
+      }
+    ],
+    "domainStrategy": "AsIs"
+  }
+}
+EOF
+
 }
 
 xray_log(){
