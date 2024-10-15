@@ -4,9 +4,11 @@ api_token="{apiToken}"
 api_url="{apiUrl}"
 vless_tcp_port={vlessTcpPort}
 vmess_tcp_port={vmessTcpPort}
+enable_http=1
 
 xray_path="/var/rocket-ssh/xray"
 xray_conf_path="/var/rocket-ssh/xray/conf/"
+configs_file_path="/var/rocket-ssh/configs.json"
 
 if [ -d $xray_path ]; then
     systemctl stop rsxray
@@ -14,6 +16,31 @@ if [ -d $xray_path ]; then
 fi
 
 mkdir -p $xray_path
+
+file_exists() {
+    if [[ ! -f "$1" ]]; then
+        echo "config file does not exist."
+        exit 1
+    fi
+}
+
+trim_string() {
+    echo "$1" | xargs
+}
+
+get_configs() {
+    local path="$1"
+    # Check if the config file exists
+    file_exists "$configs_file_path"
+
+    # Construct jq query and execute
+    local jq_query=".${path}"
+    local result=$(jq --raw-output "$jq_query" "$configs_file_path")
+
+    # Trim the result and return
+    trimmed_result=$(trim_string "$result")
+    echo "$trimmed_result"
+}
 
 get_cpu_vendor(){
   case "$(uname -m)" in
@@ -110,9 +137,11 @@ EOF
 
 }
 
-create_default_configs(){
-  mkdir -p $xray_conf_path
-cat <<EOF >${xray_conf_path}00_log.json
+create_default_configs(){ 
+    
+  mkdir -p $xray_conf_path  
+  
+  cat <<EOF >${xray_conf_path}00_log.json
 {
   "log": {
     "error": "/var/log/v2ray/error.log",
@@ -122,7 +151,7 @@ cat <<EOF >${xray_conf_path}00_log.json
 }
 EOF
 
-cat <<EOF >${xray_conf_path}01_vless_tcp.json
+  cat <<EOF >${xray_conf_path}01_vless_tcp.json
 {
   "inbounds": [
     {
@@ -136,8 +165,8 @@ cat <<EOF >${xray_conf_path}01_vless_tcp.json
       },
       "streamSettings": {
         "network": "tcp",
-        "security": "none",
-        "tcpSettings": {
+        "security": "none"
+        $(if [ "$enable_http" -eq 1 ]; then echo ', "tcpSettings": {
           "acceptProxyProtocol": false,
           "header": {
             "request": {
@@ -154,14 +183,14 @@ cat <<EOF >${xray_conf_path}01_vless_tcp.json
             },
             "type": "http"
           }
-        }
+        }'; fi)
       }
     }
   ]
 }
 EOF
 
-cat <<EOF >${xray_conf_path}02_vmess_tcp.json
+  cat <<EOF >${xray_conf_path}02_vmess_tcp.json
 {
   "inbounds": [
     {
@@ -174,8 +203,8 @@ cat <<EOF >${xray_conf_path}02_vmess_tcp.json
       },
       "streamSettings": {
         "network": "tcp",
-        "security": "none",
-        "tcpSettings": {
+        "security": "none"
+        $(if [ "$enable_http" -eq 1 ]; then echo ', "tcpSettings": {
           "acceptProxyProtocol": false,
           "header": {
             "request": {
@@ -192,70 +221,12 @@ cat <<EOF >${xray_conf_path}02_vmess_tcp.json
             },
             "type": "http"
           }
-        }
+        }'; fi)
       }
     }
   ]
 }
 EOF
-
-cat <<EOF >${xray_conf_path}y_deco_api.json
-{
-  "inbounds": [
-    {
-      "listen": "127.0.0.1",
-      "protocol": "dokodemo-door",
-      "settings": {
-        "address": "127.0.0.1"
-      },
-      "tag": "api",
-      "port": 65432
-    }
-  ]
-}
-EOF
-
-cat <<EOF >${xray_conf_path}z_configs.json
-{
-  "outbounds": [
-    {
-      "protocol": "freedom"
-    }
-  ],
-  "stats": {},
-  "policy": {
-    "levels": {
-      "0": {
-        "statsUserUplink": true,
-        "statsUserDownlink": true
-      }
-    },
-    "system": {
-      "statsOutboundUplink": true,
-      "statsOutboundDownlink": true
-    }
-  },
-  "api": {
-    "tag": "api",
-    "services": [
-      "StatsService"
-    ]
-  },
-  "routing": {
-    "rules": [
-      {
-        "inboundTag": [
-          "api"
-        ],
-        "outboundTag": "api",
-        "type": "field"
-      }
-    ],
-    "domainStrategy": "AsIs"
-  }
-}
-EOF
-
 }
 
 xray_log(){
@@ -271,7 +242,7 @@ complete_install(){
     echo "installed_v2ray"
 }
 
-
+enable_http=$(get_configs "servers_v2ray.enable_http")
 install_xray
 xray_log
 create_default_configs
