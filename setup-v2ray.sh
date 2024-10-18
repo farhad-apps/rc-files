@@ -300,7 +300,7 @@ complete_install(){
     echo "installed_v2ray"
 }
 
-enable_http=$(get_configs "servers_v2ray.enable_http")
+#enable_http=$(get_configs "servers_v2ray.enable_http")
 install_xray
 xray_log
 create_default_configs
