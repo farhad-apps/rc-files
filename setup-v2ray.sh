@@ -35,11 +35,16 @@ get_configs() {
 
     # Construct jq query and execute
     local jq_query=".${path}"
-    local result=$(jq --raw-output "$jq_query" "$configs_file_path")
+    local result=$(jq --raw-output "$jq_query // empty" "$configs_file_path")
 
-    # Trim the result and return
-    trimmed_result=$(trim_string "$result")
-    echo "$trimmed_result"
+    # If the result is empty, return null
+    if [[ -z "$result" ]]; then
+        echo "null"
+    else
+        # Trim the result and return
+        trimmed_result=$(trim_string "$result")
+        echo "$trimmed_result"
+    fi
 }
 
 get_cpu_vendor(){
@@ -166,7 +171,7 @@ EOF
       "streamSettings": {
         "network": "tcp",
         "security": "none"
-        $(if [ "$enable_http" -eq 1 ]; then echo ', "tcpSettings": {
+        $(if [ "$enable_http" -eq 1 ] || [ -z "$enable_http" ]; then echo ', "tcpSettings": {
           "acceptProxyProtocol": false,
           "header": {
             "request": {
@@ -204,7 +209,7 @@ EOF
       "streamSettings": {
         "network": "tcp",
         "security": "none"
-        $(if [ "$enable_http" -eq 1 ]; then echo ', "tcpSettings": {
+        $(if [ "$enable_http" -eq 1 ] || [ -z "$enable_http" ]; then echo ', "tcpSettings": {
           "acceptProxyProtocol": false,
           "header": {
             "request": {
@@ -300,7 +305,7 @@ complete_install(){
     echo "installed_v2ray"
 }
 
-#enable_http=$(get_configs "servers_v2ray.enable_http")
+enable_http=$(get_configs "servers_v2ray.enable_http")
 install_xray
 xray_log
 create_default_configs
