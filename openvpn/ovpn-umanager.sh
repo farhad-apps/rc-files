@@ -3,7 +3,7 @@
 api_url="{openApiUrl}";
 api_token="{openApiToken}";
 
-server_ip=$(hostname -I | awk '{print $1}')
+server_ip=$(ip route get 1.1.1.1 | grep -oP 'src \K[^ ]+')
 
 DATA=$(cat <<EOF
 {
