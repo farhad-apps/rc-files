@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 api_token="{apiToken}"
 api_url="{apiUrl}"
@@ -15,7 +15,7 @@ fi
 mkdir -p $xray_path
 
 file_exists() {
-    if [[ ! -f "$1" ]]; then
+    if [ ! -f "$1" ]; then
         echo "config file does not exist."
         exit 1
     fi
@@ -30,7 +30,7 @@ get_configs() {
     file_exists "$configs_file_path"
     local jq_query=".${path}"
     local result=$(jq --raw-output "$jq_query // empty" "$configs_file_path")
-    if [[ -z "$result" ]]; then
+    if [ -z "$result" ]; then
         echo "null"
     else
         trimmed_result=$(trim_string "$result")
@@ -121,9 +121,8 @@ create_default_configs(){
 }
 EOF
 
-echo "MY CDN $enable_cdn"
   # --- VLESS ---
-  if [[ "$enable_cdn" == "true" || "$enable_cdn" == "1" ]]; then
+  if [ "$enable_cdn" = "true" ] || [ "$enable_cdn" = "1" ]; then
     cat <<EOF >${xray_conf_path}01_vless_tcp.json
 {
   "inbounds": [
@@ -165,13 +164,13 @@ echo "MY CDN $enable_cdn"
           "maxVersion": "1.3",
           "minVersion": "1.2",
           "rejectUnknownSni": false,
-          "serverName": "${domain}"
+          "serverName": "${cdn_domain}"
         },
         "wsSettings": {
           "acceptProxyProtocol": false,
           "headers": {},
           "heartbeatPeriod": 0,
-          "host": "${domain}",
+          "host": "${cdn_domain}",
           "path": "/"
         }
       }
@@ -203,7 +202,7 @@ EOF
   fi
 
   # --- VMESS ---
-  if [[ "$enable_cdn" == "true" || "$enable_cdn" == "1" ]]; then
+  if [ "$enable_cdn" = "true" ] || [ "$enable_cdn" = "1" ]; then
     cat <<EOF >${xray_conf_path}02_vmess_tcp.json
 {
   "inbounds": [
@@ -243,13 +242,13 @@ EOF
           "maxVersion": "1.3",
           "minVersion": "1.2",
           "rejectUnknownSni": false,
-          "serverName": "${domain}"
+          "serverName": "${cdn_domain}"
         },
         "wsSettings": {
           "acceptProxyProtocol": false,
           "headers": {},
           "heartbeatPeriod": 0,
-          "host": "${domain}",
+          "host": "${cdn_domain}",
           "path": "/"
         }
       }
@@ -353,9 +352,7 @@ complete_install(){
 
 # Read configs
 enable_cdn=$(get_configs "servers_v2ray.enable_cdn")
-echo "Enable CDN $enable_cdn"
-
-domain=$(get_configs "servers_v2ray.domain")
+cdn_domain=$(get_configs "servers_v2ray.cdn_domain")
 vless_tcp_port=$(get_configs "servers_v2ray.vless_tcp_port")
 vmess_tcp_port=$(get_configs "servers_v2ray.vmess_tcp_port")
 
