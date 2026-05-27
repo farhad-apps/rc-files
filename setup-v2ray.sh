@@ -121,6 +121,7 @@ create_default_configs(){
 }
 EOF
 
+echo "MY CDN $enable_cdn"
   # --- VLESS ---
   if [[ "$enable_cdn" == "true" || "$enable_cdn" == "1" ]]; then
     cat <<EOF >${xray_conf_path}01_vless_tcp.json
