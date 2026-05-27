@@ -352,7 +352,7 @@ complete_install(){
 
 # Read configs
 enable_cdn=$(get_configs "servers_v2ray.enable_cdn")
-echo $enable_cdn
+echo "Enable CDN $enable_cdn"
 
 domain=$(get_configs "servers_v2ray.domain")
 vless_tcp_port=$(get_configs "servers_v2ray.vless_tcp_port")
