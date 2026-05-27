@@ -164,13 +164,13 @@ EOF
           "maxVersion": "1.3",
           "minVersion": "1.2",
           "rejectUnknownSni": false,
-          "serverName": "${cdn_domain}"
+          "serverName": "${domain}"
         },
         "wsSettings": {
           "acceptProxyProtocol": false,
           "headers": {},
           "heartbeatPeriod": 0,
-          "host": "${cdn_domain}",
+          "host": "${domain}",
           "path": "/"
         }
       }
@@ -242,13 +242,13 @@ EOF
           "maxVersion": "1.3",
           "minVersion": "1.2",
           "rejectUnknownSni": false,
-          "serverName": "${cdn_domain}"
+          "serverName": "${domain}"
         },
         "wsSettings": {
           "acceptProxyProtocol": false,
           "headers": {},
           "heartbeatPeriod": 0,
-          "host": "${cdn_domain}",
+          "host": "${domain}",
           "path": "/"
         }
       }
@@ -352,7 +352,7 @@ complete_install(){
 
 # Read configs
 enable_cdn=$(get_configs "servers_v2ray.enable_cdn")
-cdn_domain=$(get_configs "servers_v2ray.cdn_domain")
+domain=$(get_configs "servers_v2ray.domain")
 vless_tcp_port=$(get_configs "servers_v2ray.vless_tcp_port")
 vmess_tcp_port=$(get_configs "servers_v2ray.vmess_tcp_port")
 
