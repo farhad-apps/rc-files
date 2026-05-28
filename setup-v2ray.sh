@@ -352,7 +352,7 @@ complete_install(){
 
 # Read configs
 enable_cdn=$(get_configs "servers_v2ray.enable_cdn")
-cdn_domain=$(get_configs "servers_v2ray.cdn_domain")
+cdn_domain=$(get_configs "servers_v2ray.domain")
 vless_tcp_port=$(get_configs "servers_v2ray.vless_tcp_port")
 vmess_tcp_port=$(get_configs "servers_v2ray.vmess_tcp_port")
 
